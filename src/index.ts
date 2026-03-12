@@ -2,13 +2,14 @@ import express, {Request, Response} from 'express'
 import bodyParser from "body-parser";
 import {productsRouter} from "./routes/products.route";
 import {setupApp} from "./set.app";
+import {blogsRouter} from "./routes/blogs-router/blogs.router";
+import {postsRouter} from "./routes/posts-router/posts.router";
+import {PATH} from "./core/paths/paths";
 
 const app = express()
 setupApp(app)
 const port = 3000
 
-
-const address = [{id: 1, value: 'Minsk'}, {id: 2, value: 'Moscow'}]
 const bodyP = bodyParser({})
 
 app.use(bodyP)
@@ -17,6 +18,8 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Super !')
 })
 app.use('/products', productsRouter)
+app.use(PATH.BLOGS, blogsRouter)
+app.use(PATH.POSTS, postsRouter)
 
 
 app.listen(port, () => {
