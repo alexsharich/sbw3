@@ -32,7 +32,12 @@ export const blogsRepository = {
         return blogs.find(b => b.id === id)
     },
     update(id: number, dto: BlogDto) {
-        blogs.map(b => b.id === id ? {...b, dto} : b)
+        const blog = blogs.find(b => b.id === id)
+        if (blog) {
+            blog!.name = dto.name,
+                blog!.description = dto.description,
+                blog!.websiteUrl = dto.websiteUrl
+        }
         return true
     },
     delete(id: number) {

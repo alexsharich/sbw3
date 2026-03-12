@@ -1,6 +1,8 @@
 import {Router, Request, Response} from "express";
 import {postsRepository} from "../../repositories/posts/posts.repository";
 import {blogsRepository} from "../../repositories/blogs/blogs.repository";
+import {findPostValidator, postsValidator} from "../../validators/postsValidator";
+import {adminMiddleware} from "../../global-middleware/admin.middleware";
 
 export const postsRouter = Router({})
 
@@ -23,7 +25,7 @@ postsRouter.get('/', (req: Request, res: Response) => {
     const posts = postsRepository.getAll()
     res.status(200).send(posts)
 })
-postsRouter.post('/', (req: Request, res: Response) => {
+postsRouter.post('/', ...postsValidator, (req: Request, res: Response) => {
     const blog = blogsRepository.getById(req.body.blogId)
     if (!blog) {
         res.status(404) // 404 ???
@@ -43,7 +45,7 @@ postsRouter.post('/', (req: Request, res: Response) => {
     }
     res.status(201).send(post)
 })
-postsRouter.get('/:id', (req: Request, res: Response) => {
+postsRouter.get('/:id', findPostValidator, (req: Request, res: Response) => {
     const id = +req.params.id
     const post = postsRepository.getById(id)
     if (!post) {
@@ -51,10 +53,10 @@ postsRouter.get('/:id', (req: Request, res: Response) => {
     }
     res.status(200).send(post)
 })
-postsRouter.put('/:id', (req: Request, res: Response) => {
+postsRouter.put('/:id', adminMiddleware, ...postsValidator, (req: Request, res: Response) => {
     const id = +req.params.id
     const isPostExist = postsRepository.getById(id)
-    console.log( 'post exist ',isPostExist)
+    console.log('post exist ', isPostExist)
     if (!isPostExist) {
         res.send(404)
         return
@@ -66,14 +68,14 @@ postsRouter.put('/:id', (req: Request, res: Response) => {
         blogId: req.body.blogId
     }
     const isPostCreated = postsRepository.update(id, dto)
-    console.log('isPost created',isPostCreated)
-    if(!isPostCreated){
+    console.log('isPost created', isPostCreated)
+    if (!isPostCreated) {
         res.send(404)
         return
     }
     res.send(204)
 })
-postsRouter.delete('/:id', (req: Request, res: Response) => {
+postsRouter.delete('/:id', adminMiddleware, findPostValidator, (req: Request, res: Response) => {
     const id = +req.params.id
     const isDeleted = postsRepository.delete(id)
     if (!isDeleted) {

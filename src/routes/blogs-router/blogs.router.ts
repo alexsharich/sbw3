@@ -1,6 +1,8 @@
 import {Router} from "express";
 import {Response, Request} from 'express'
 import {blogsRepository} from "../../repositories/blogs/blogs.repository";
+import {blogValidator, findBlogValidator} from "../../validators/blogsValidator";
+import {adminMiddleware} from "../../global-middleware/admin.middleware";
 
 export const blogsRouter = Router({})
 
@@ -14,7 +16,7 @@ blogsRouter.get('/', (req: Request, res: Response) => {
     const blogs = blogsRepository.getAll()
     res.status(200).send(blogs)
 })
-blogsRouter.post('/', (req: Request, res: Response) => {//add 400
+blogsRouter.post('/', ...blogValidator, (req: Request, res: Response) => {//add 400
     const newBlog = {
         id: new Date().getTime(),
         name: req.body.name,
@@ -31,7 +33,7 @@ blogsRouter.post('/', (req: Request, res: Response) => {//add 400
     }
     res.status(201).send(blog)
 }) // 404 swagger not exist
-blogsRouter.get('/:id', (req: Request, res: Response) => {
+blogsRouter.get('/:id', findBlogValidator, (req: Request, res: Response) => {
     const id = +req.params.id
     const blog = blogsRepository.getById(id)
     if (!blog) {
@@ -39,7 +41,7 @@ blogsRouter.get('/:id', (req: Request, res: Response) => {
     }
     res.status(200).send(blog)
 })
-blogsRouter.put('/:id', (req: Request, res: Response) => {//add 400
+blogsRouter.put('/:id', findBlogValidator, ...blogValidator, (req: Request, res: Response) => {//add 400
     const id = +req.params.id
     const body: BlogDto = {
         name: req.body.name,
@@ -53,7 +55,7 @@ blogsRouter.put('/:id', (req: Request, res: Response) => {//add 400
     blogsRepository.update(id, body)
     res.send(204)
 })
-blogsRouter.delete('/:id', (req: Request, res: Response) => {
+blogsRouter.delete('/:id', adminMiddleware, findBlogValidator, (req: Request, res: Response) => {
     const id = +req.params.id
     const isDeleted = blogsRepository.delete(id)
     if (!isDeleted) {

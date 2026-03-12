@@ -4,7 +4,7 @@ import {productsRouter} from "./routes/products.route";
 import {setupApp} from "./set.app";
 import {blogsRouter} from "./routes/blogs-router/blogs.router";
 import {postsRouter} from "./routes/posts-router/posts.router";
-import {PATH} from "./core/paths/paths";
+import {SETTINGS} from "./settings";
 
 const app = express()
 setupApp(app)
@@ -18,8 +18,8 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Super !')
 })
 app.use('/products', productsRouter)
-app.use(PATH.BLOGS, blogsRouter)
-app.use(PATH.POSTS, postsRouter)
+app.use(SETTINGS.PATH.BLOGS, blogsRouter)
+app.use(SETTINGS.PATH.POSTS, postsRouter)
 
 
 app.listen(port, () => {
