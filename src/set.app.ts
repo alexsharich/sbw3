@@ -1,9 +1,9 @@
 import express, { Express } from "express";
 
 export const setupApp = (app: Express) => {
-    app.use(express.json()); // middleware для парсинга JSON в теле запроса
+    app.use(express.json());
 
-    // основной роут
+
     app.get("/", (req, res) => {
         res.status(200).send("FOR TESTS");
     });

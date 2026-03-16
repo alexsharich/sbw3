@@ -1,6 +1,5 @@
 import {body} from "express-validator";
 import {inputCheckErrorsMiddleware} from "../global-middleware/inputCheckErrorMiddleware";
-import {postsRepository} from "../repositories/posts/posts.repository";
 import {NextFunction,Request,Response} from "express";
 import {blogsRepository} from "../repositories/blogs/blogs.repository";
 import {adminMiddleware} from "../global-middleware/admin.middleware";
