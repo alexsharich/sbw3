@@ -5,23 +5,16 @@ import {setupApp} from "./set.app";
 import {blogsRouter} from "./routes/blogs-router/blogs.router";
 import {postsRouter} from "./routes/posts-router/posts.router";
 import {SETTINGS} from "./settings";
-
-const app = express()
-setupApp(app)
-const port = 3000
-
-const bodyP = bodyParser({})
-
-app.use(bodyP)
-
-app.get('/', (req: Request, res: Response) => {
-    res.send('Super !')
-})
-app.use('/products', productsRouter)
-app.use(SETTINGS.PATH.BLOGS, blogsRouter)
-app.use(SETTINGS.PATH.POSTS, postsRouter)
+import {runDb} from "./repositories/db/db";
+import {app} from "./app";
 
 
-app.listen(port, () => {
-    console.log(`App was started on ${port}`)
-})
+const startApp = async () => {
+    await runDb()
+
+    app.listen(SETTINGS.PORT, () => {
+        console.log(`App was started on ${SETTINGS.PORT}`)
+    })
+    app.set('trust proxy', true)
+}
+startApp()
