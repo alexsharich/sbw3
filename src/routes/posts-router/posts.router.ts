@@ -1,8 +1,11 @@
-import {Router, Request, Response} from "express";
-import {postsRepository} from "../../repositories/posts/posts.repository";
-import {blogsRepository} from "../../repositories/blogs/blogs.repository";
+import {Router} from "express";
 import {findPostValidator, postsValidator} from "../../validators/postsValidator";
 import {adminMiddleware} from "../../global-middleware/admin.middleware";
+import {getPostsController} from "../../controllers/posts/get.posts.controller";
+import {createPostController} from "../../controllers/posts/create.post.controller";
+import {updatePostController} from "../../controllers/posts/update.post.controller";
+import {deletePostController} from "../../controllers/posts/delete.post.controller";
+import {findPostController} from "../../controllers/posts/find.post.controller";
 
 export const postsRouter = Router({})
 
@@ -21,65 +24,8 @@ export type Post = {
     blogName: string | undefined
 }
 
-postsRouter.get('/', (req: Request, res: Response) => {
-    const posts = postsRepository.getAll()
-    res.status(200).send(posts)
-})
-postsRouter.post('/', ...postsValidator, (req: Request, res: Response) => {
-    const blog = blogsRepository.getById(req.body.blogId)
-    if (!blog) {
-        res.status(404) // 404 ???
-    }
-    const newPost: Post = {
-        id: new Date().getTime(),
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        blogId: req.body.blogId,
-        blogName: /*blog?.name*/blogsRepository.getById(+req.body.blogId)?.name
-    }
-    const postId = postsRepository.create(newPost)
-    const post = postsRepository.getById(postId)
-    if (!post) {
-        res.status(404)
-    }
-    res.status(201).send(post)
-})
-postsRouter.get('/:id', findPostValidator, (req: Request, res: Response) => {
-    const id = +req.params.id
-    const post = postsRepository.getById(id)
-    if (!post) {
-        res.status(404)
-    }
-    res.status(200).send(post)
-})
-postsRouter.put('/:id', adminMiddleware, ...postsValidator, (req: Request, res: Response) => {
-    const id = +req.params.id
-    const isPostExist = postsRepository.getById(id)
-    console.log('post exist ', isPostExist)
-    if (!isPostExist) {
-        res.send(404)
-        return
-    }
-    const dto = {
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        blogId: req.body.blogId
-    }
-    const isPostCreated = postsRepository.update(id, dto)
-    console.log('isPost created', isPostCreated)
-    if (!isPostCreated) {
-        res.send(404)
-        return
-    }
-    res.send(204)
-})
-postsRouter.delete('/:id', adminMiddleware, findPostValidator, (req: Request, res: Response) => {
-    const id = +req.params.id
-    const isDeleted = postsRepository.delete(id)
-    if (!isDeleted) {
-        res.send(404)
-    }
-    res.send(204)
-})
+postsRouter.get('/', getPostsController)
+postsRouter.post('/', ...postsValidator, createPostController)
+postsRouter.get('/:id', findPostValidator, findPostController)
+postsRouter.put('/:id', adminMiddleware, ...postsValidator, updatePostController)
+postsRouter.delete('/:id', adminMiddleware, findPostValidator, deletePostController)

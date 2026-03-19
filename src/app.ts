@@ -1,20 +1,20 @@
-import express, {Request, Response} from "express";
-import {productsRouter} from "./routes/products.route";
+import express, {Express} from 'express'
 import {SETTINGS} from "./settings";
-import {blogsRouter} from "./routes/blogs-router/blogs.router";
+import {Request, Response} from "express";
+
 import {postsRouter} from "./routes/posts-router/posts.router";
-import bodyParser from "body-parser";
-import {setupApp} from "./set.app";
+import {blogsRouter} from "./routes/blogs-router/blogs.router";
+import {testingRouter} from "./routes/testing/testing.router";
 
 
-export const app = express()
-const bodyP = bodyParser({})
-setupApp(app)
+export const setupApp = async (app: Express) => {
+    app.use(express.json());
+    app.get('/', (req: Request, res: Response) => {
+        res.status(200).json({version: '1.0'})
+    })
+    app.use(SETTINGS.PATH.POSTS, postsRouter)
+    app.use(SETTINGS.PATH.BLOGS, blogsRouter)
+    app.use(SETTINGS.PATH.TESTING,testingRouter)
 
-app.use(bodyP)
-app.get('/', (req: Request, res: Response) => {
-    res.send('Super !')
-})
-app.use('/products', productsRouter)
-app.use(SETTINGS.PATH.BLOGS, blogsRouter)
-app.use(SETTINGS.PATH.POSTS, postsRouter)
+    return app;
+};

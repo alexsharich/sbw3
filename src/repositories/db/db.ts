@@ -1,26 +1,25 @@
-import {MongoClient} from 'mongodb'
-import dotenv from 'dotenv'
+import { Collection, Db, MongoClient } from 'mongodb';
+import {BlogDBType} from "../../input-output-types/blogs.type";
 
-dotenv.config()
 
-const mongoUri = process.env.MONGO_URL
-if (!mongoUri) {
-    throw new Error('INVALID MONGO URL')
-}
-export const client = new MongoClient(mongoUri)
-const DB = client.db('social')
-/*export const postsCollection = DB.collection<PostDBType>('posts')
-export const blogsCollection = DB.collection<BlogDBType>('blogs')
-export const usersCollection = DB.collection<UserAccountDBType>('users')
-export const commentsCollection = DB.collection<CommentDBType>('comment')
-export const devicesCollection = DB.collection<Device>('devices')
-export const apiRequestCollection = DB.collection<ApiRequest>('apiRequests')*/
 
-export async function runDb() {
-    /*try {
-        await mongoose.connect(mongoUri + '/social')
-        console.log('Connected successfully to mongo server')
-    } catch {
-        await mongoose.disconnect()
-    }*/
+export let client: MongoClient;
+export let blogsCollection: Collection<BlogDBType>;
+
+// Подключения к бд
+export async function runDB(url: string): Promise<void> {
+    client = new MongoClient(url);
+    const db: Db = client.db('social');
+
+    //Инициализация коллекций
+    blogsCollection = db.collection<BlogDBType>('blogs');
+
+    try {
+        await client.connect();
+        await db.command({ ping: 1 });
+        console.log('✅ Connected to the database');
+    } catch (e) {
+        await client.close();
+        throw new Error(`❌ Database not connected: ${e}`);
+    }
 }

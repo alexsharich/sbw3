@@ -1,20 +1,20 @@
-import express, {Request, Response} from 'express'
-import bodyParser from "body-parser";
-import {productsRouter} from "./routes/products.route";
-import {setupApp} from "./set.app";
-import {blogsRouter} from "./routes/blogs-router/blogs.router";
-import {postsRouter} from "./routes/posts-router/posts.router";
+import express from 'express';
 import {SETTINGS} from "./settings";
-import {runDb} from "./repositories/db/db";
-import {app} from "./app";
+import {runDB} from "./repositories/db/db";
+import {setupApp} from "./app";
 
 
-const startApp = async () => {
-    await runDb()
+const bootstrap = async () => {
+    const app = express();
+    setupApp(app);
+    const PORT = SETTINGS.PORT;
 
-    app.listen(SETTINGS.PORT, () => {
-        console.log(`App was started on ${SETTINGS.PORT}`)
-    })
-    app.set('trust proxy', true)
-}
-startApp()
+    await runDB('mongodb://127.0.0.1:27017');
+
+    app.listen(PORT, () => {
+        console.log(`Example app listening on port ${PORT}`);
+    });
+    return app;
+};
+
+bootstrap();

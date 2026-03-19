@@ -18,7 +18,7 @@ export const contentValidator = body('content').isString().withMessage('not stri
     max: 1000
 }).withMessage('more than 1000 or 0')
 export const blogIdValidator = body('blogId').isString().withMessage('not string').trim().custom(async (blogId: string) => {
-    const blog = await blogsRepository.getById(+blogId)
+    const blog = await blogsRepository.getById(blogId)
     if (!blog) {
         throw new Error('blog not found')
         return true
