@@ -1,4 +1,3 @@
-import {BlogDto,} from "../../routes/blogs-router/blogs.router";
 import {blogsCollection} from "../db/db";
 import {ObjectId, WithId} from "mongodb";
 import {BlogDBType, OutputBlogType} from "../../input-output-types/blogs.type";

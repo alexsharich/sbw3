@@ -2,6 +2,7 @@ export type OutputPostType = {
     id: string,
     title: string,
     shortDescription: string,
+    createdAt: string,
     content: string,
     blogId: string,
     blogName: string
@@ -18,4 +19,12 @@ export type InputPostForBlogType = {
     title: string // max 30
     shortDescription: string // max 100
     content: string // max 1000
+}
+export type PostDBType = {
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string,
+    blogName: string
+    createdAt: string
 }

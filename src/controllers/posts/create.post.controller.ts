@@ -1,25 +1,21 @@
 import {Request, Response} from "express";
-import {blogsRepository} from "../../repositories/blogs/blogs.repository";
 import {postsRepository} from "../../repositories/posts/posts.repository";
-import {Post} from "../../routes/posts-router/posts.router";
+import {postsService} from "../../services/posts.service";
 
-export const createPostController = (req: Request, res: Response) => {
-    /*const blog = blogsRepository.getById(req.body.blogId)
-    if (!blog) {
-        res.status(404) // 404 ???
+export const createPostController = async (req: Request, res: Response) => {
+
+    const newPostCreated = await postsService.createPost(req.body)
+
+    if (newPostCreated === null) {
+        res.sendStatus(400)
+        return
     }
-    const newPost: Post = {
-        id: new Date().getTime(),
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        blogId: req.body.blogId,
-        blogName: /!*blog?.name*!/blogsRepository.getById(+req.body.blogId)?.name
+
+    const newPost = await postsRepository.getById(newPostCreated.toString())
+    if (!newPost) {
+
+        res.sendStatus(400)
+        return
     }
-    const postId = postsRepository.create(newPost)
-    const post = postsRepository.getById(postId)
-    if (!post) {
-        res.status(404)
-    }
-    res.status(201).send(post)*/
+    res.status(201).json(newPost)
 }

@@ -1,25 +1,12 @@
 import {Request, Response} from "express";
 import {postsRepository} from "../../repositories/posts/posts.repository";
+import {InputPostType} from "../../input-output-types/posts.type";
 
-export const updatePostController = (req: Request, res: Response) => {
-    const id = +req.params.id
-    const isPostExist = postsRepository.getById(id)
-    console.log('post exist ', isPostExist)
-    if (!isPostExist) {
-        res.send(404)
+export const updatePostController = async (req: Request<{ id: string }, any, InputPostType>, res: Response) => {
+    const isPostUpdated = await postsRepository.update({params: req.params.id, body: req.body})
+    if (isPostUpdated) {
+        res.status(204).send(isPostUpdated)
         return
     }
-    const dto = {
-        title: req.body.title,
-        shortDescription: req.body.shortDescription,
-        content: req.body.content,
-        blogId: req.body.blogId
-    }
-    const isPostCreated = postsRepository.update(id, dto)
-    console.log('isPost created', isPostCreated)
-    if (!isPostCreated) {
-        res.send(404)
-        return
-    }
-    res.send(204)
+    res.sendStatus(404)
 }
