@@ -1,8 +1,8 @@
 import {body} from "express-validator";
-import {inputCheckErrorsMiddleware} from "../global-middleware/inputCheckErrorMiddleware";
+import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErrorMiddleware";
 import {NextFunction,Request,Response} from "express";
-import {blogsRepository} from "../repositories/blogs/blogs.repository";
-import {adminMiddleware} from "../global-middleware/admin.middleware";
+import {blogsRepository} from "../repositories/blogs.repository";
+import {adminMiddleware} from "../../global-middleware/admin.middleware";
 
 export const nameValidator = body('name').isString().withMessage('not string').isLength({
     min:1,

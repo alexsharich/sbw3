@@ -1,11 +1,11 @@
 import {Router} from "express";
-import {findPostValidator, postsValidator} from "../../validators/postsValidator";
+import {findPostValidator, postsValidator} from "../../posts/validators/postsValidator";
 import {adminMiddleware} from "../../global-middleware/admin.middleware";
-import {getPostsController} from "../../controllers/posts/get.posts.controller";
-import {createPostController} from "../../controllers/posts/create.post.controller";
-import {updatePostController} from "../../controllers/posts/update.post.controller";
-import {deletePostController} from "../../controllers/posts/delete.post.controller";
-import {findPostController} from "../../controllers/posts/find.post.controller";
+import {getPostsController} from "../../posts/controllers/get.posts.controller";
+import {createPostController} from "../../posts/controllers/create.post.controller";
+import {updatePostController} from "../../posts/controllers/update.post.controller";
+import {deletePostController} from "../../posts/controllers/delete.post.controller";
+import {findPostController} from "../../posts/controllers/find.post.controller";
 
 export const postsRouter = Router({})
 

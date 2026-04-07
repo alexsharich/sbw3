@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import {postsRepository} from "../../repositories/posts/posts.repository";
-import {postsService} from "../../services/posts.service";
+import {postsRepository} from "../repositories/posts.repository";
+import {postsService} from "../services/posts.service";
 
 export const createPostController = async (req: Request, res: Response) => {
 

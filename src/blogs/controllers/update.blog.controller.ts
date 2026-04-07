@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {blogsRepository} from "../../repositories/blogs/blogs.repository";
+import {blogsRepository} from "../repositories/blogs.repository";
 import {BlogDto} from "../../routes/blogs-router/blogs.router";
 
 export const updateBlogController = (req: Request, res: Response) => {//add 400

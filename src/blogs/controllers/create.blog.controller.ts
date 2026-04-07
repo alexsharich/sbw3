@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {blogsRepository} from "../../repositories/blogs/blogs.repository";
+import {blogsRepository} from "../repositories/blogs.repository";
 
 export const createBlogController = async (req: Request, res: Response) => {//add 400
     const newBlog = {

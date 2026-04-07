@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {postsRepository} from "../../repositories/posts/posts.repository";
+import {postsRepository} from "../repositories/posts.repository";
 import {InputPostType} from "../../input-output-types/posts.type";
 
 export const updatePostController = async (req: Request<{ id: string }, any, InputPostType>, res: Response) => {

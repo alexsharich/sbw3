@@ -1,11 +1,11 @@
 import {Post} from "../../routes/posts-router/posts.router";
 import {ObjectId, WithId} from "mongodb";
-import {blogsCollection, postsCollection} from "../db/db";
-import {PostType} from "../../services/posts.service";
+import {blogsCollection, postsCollection} from "../../repositories/db/db";
+import {PostType} from "../services/posts.service";
 import {OutputPostType, PostDBType} from "../../input-output-types/posts.type";
 import {OutputBlogType} from "../../input-output-types/blogs.type";
 import {PaginationQueriesType} from "../../helpers/pagination.values";
-import {SortMongoType} from "../blogs/blogs.repository";
+import {SortMongoType} from "../../blogs/repositories/blogs.repository";
 
 
 const posts: Array<Post> = []

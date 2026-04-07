@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {blogsRepository} from "../../repositories/blogs/blogs.repository";
+import {blogsRepository} from "../repositories/blogs.repository";
 import {paginationQueries, PaginationQueriesType} from "../../helpers/pagination.values";
 
 export const getBlogsController = async (req: Request<{}, {}, {}, PaginationQueriesType>, res: Response) => {

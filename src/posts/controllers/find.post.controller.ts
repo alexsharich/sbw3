@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {postsRepository} from "../../repositories/posts/posts.repository";
+import {postsRepository} from "../repositories/posts.repository";
 
 export const findPostController = async (req: Request, res: Response) => {
     const foundPost = await postsRepository.getById(req.params.id)

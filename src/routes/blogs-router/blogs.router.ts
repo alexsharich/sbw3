@@ -1,11 +1,11 @@
 import {Router} from "express";
-import {blogValidator, findBlogValidator} from "../../validators/blogsValidator";
+import {blogValidator, findBlogValidator} from "../../blogs/validators/blogsValidator";
 import {adminMiddleware} from "../../global-middleware/admin.middleware";
-import {createBlogController} from "../../controllers/blogs/create.blog.controller";
-import {updateBlogController} from "../../controllers/blogs/update.blog.controller";
-import {deleteBlogController} from "../../controllers/blogs/delete.blog.controller";
-import {getBlogsController} from "../../controllers/blogs/get.blogs.controller";
-import {findBlogController} from "../../controllers/blogs/find.blog.controller";
+import {createBlogController} from "../../blogs/controllers/create.blog.controller";
+import {updateBlogController} from "../../blogs/controllers/update.blog.controller";
+import {deleteBlogController} from "../../blogs/controllers/delete.blog.controller";
+import {getBlogsController} from "../../blogs/controllers/get.blogs.controller";
+import {findBlogController} from "../../blogs/controllers/find.blog.controller";
 
 export const blogsRouter = Router({})
 

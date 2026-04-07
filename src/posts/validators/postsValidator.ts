@@ -1,9 +1,9 @@
 import {body} from "express-validator";
-import {inputCheckErrorsMiddleware} from "../global-middleware/inputCheckErrorMiddleware";
-import {blogsRepository} from "../repositories/blogs/blogs.repository";
+import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErrorMiddleware";
+import {blogsRepository} from "../../blogs/repositories/blogs.repository";
 import {NextFunction, Request, Response} from "express";
-import {postsRepository} from "../repositories/posts/posts.repository";
-import {adminMiddleware} from "../global-middleware/admin.middleware";
+import {postsRepository} from "../repositories/posts.repository";
+import {adminMiddleware} from "../../global-middleware/admin.middleware";
 
 export const titleValidator = body('title').isString().withMessage('not string').isLength({
     min: 1,

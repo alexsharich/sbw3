@@ -1,6 +1,6 @@
-import {InputPostType} from "../input-output-types/posts.type";
-import {blogsRepository} from "../repositories/blogs/blogs.repository";
-import {postsRepository} from "../repositories/posts/posts.repository";
+import {InputPostType} from "../../input-output-types/posts.type";
+import {blogsRepository} from "../../blogs/repositories/blogs.repository";
+import {postsRepository} from "../repositories/posts.repository";
 
 export type PostType = {
     title: string,

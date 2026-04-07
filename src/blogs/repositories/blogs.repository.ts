@@ -1,4 +1,4 @@
-import {blogsCollection} from "../db/db";
+import {blogsCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
 import {BlogDBType, OutputBlogType} from "../../input-output-types/blogs.type";
 
