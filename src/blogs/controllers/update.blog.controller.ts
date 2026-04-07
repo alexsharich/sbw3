@@ -1,18 +1,17 @@
 import {Request, Response} from "express";
-import {blogsRepository} from "../repositories/blogs.repository";
+import {blogsQueryRepository} from "../repositories/blogs.query.repository";
 import {BlogDto} from "../../routes/blogs-router/blogs.router";
+import {blogsCommandRepository} from "../repositories/blogs.command.repository";
+import {blogsService} from "../services/blogs.service";
 
-export const updateBlogController = (req: Request, res: Response) => {//add 400
+export const updateBlogController = async (req: Request, res: Response) => {//add 400
 
-    const body: BlogDto = {
-        name: req.body.name,
-        description: req.body.description,
-        websiteUrl: req.body.websiteUrl
-    }
-    const blog = blogsRepository.getById(req.params.id)
+    await blogsService.updateBlog(req.body, req.params.id)
+
+    const blog = blogsQueryRepository.getById(req.params.id)
     if (!blog) {
-        res.status(404)
+        res.sendStatus(404)
+        return
     }
-    blogsRepository.updateBlog({params:req.params.id, body})
-    res.send(204)
+    res.sendStatus(204)
 }

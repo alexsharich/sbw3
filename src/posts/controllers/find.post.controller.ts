@@ -1,8 +1,8 @@
 import {Request, Response} from "express";
-import {postsRepository} from "../repositories/posts.repository";
+import {postsQueryRepository} from "../repositories/posts.query.repository";
 
 export const findPostController = async (req: Request, res: Response) => {
-    const foundPost = await postsRepository.getById(req.params.id)
+    const foundPost = await postsQueryRepository.getById(req.params.id)
     if (!foundPost) {
         res.sendStatus(404)
         return;

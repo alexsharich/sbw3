@@ -24,7 +24,7 @@ export type SortMongoType = {
     [key: string]: 1 | -1
 }
 
-export const blogsRepository = {
+export const blogsQueryRepository = {
     async getAll(query: any) {
         try {
             const pageNumber = query.pageNumber
@@ -58,11 +58,7 @@ export const blogsRepository = {
         }
 
     },
-    async create(dto: BlogDBType) {
-        const createdBlog = await blogsCollection.insertOne(dto)
-        return createdBlog.insertedId.toString()
 
-    },
     async getById(id: string) {
         try {
             const blogId = new ObjectId(id)
@@ -74,42 +70,4 @@ export const blogsRepository = {
             return null
         }
     },
-    async deleteBlog(id: string) {
-        try {
-            const blogId = new ObjectId(id)
-            const result = await blogsCollection.deleteOne({_id: blogId})
-            if (result.deletedCount === 1) return true
-            return false
-        } catch (e) {
-            return false
-        }
-    },
-    async updateBlog({params, body}: any) {
-        try {
-            const blogId = new ObjectId(params)
-
-            const result = await blogsCollection.updateOne({_id: blogId}, {
-                $set: {
-                    name: body.name,
-                    description: body.description,
-                    websiteUrl: body.websiteUrl
-                }
-            })
-
-            if (result.matchedCount === 1) return true
-            return null
-
-        } catch (e) {
-            return null
-        }
-    },
-    async deleteAllBlogs() {
-        try {
-            await blogsCollection.deleteMany({})
-        } catch (e) {
-            throw new Error('Delete...Something wrong')
-        }
-
-    },
-
 }

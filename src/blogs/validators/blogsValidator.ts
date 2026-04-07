@@ -1,7 +1,7 @@
 import {body} from "express-validator";
 import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErrorMiddleware";
 import {NextFunction,Request,Response} from "express";
-import {blogsRepository} from "../repositories/blogs.repository";
+import {blogsQueryRepository} from "../repositories/blogs.query.repository";
 import {adminMiddleware} from "../../global-middleware/admin.middleware";
 
 export const nameValidator = body('name').isString().withMessage('not string').isLength({
@@ -20,7 +20,7 @@ export const websiteUrlValidator = body('websiteUrl').isString().withMessage('no
 
 
 export const findBlogValidator = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    const blog = await blogsRepository.getById(req.params.id)
+    const blog = await blogsQueryRepository.getById(req.params.id)
     if (!blog) {
         res.status(404).json({})
         return

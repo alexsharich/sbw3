@@ -1,10 +1,11 @@
 import {Request, Response} from "express";
-import {postsRepository} from "../repositories/posts.repository";
+import {postsService} from "../services/posts.service";
 
 export const deletePostController = async (req: Request, res: Response) => {
 
-    const isDeletedPost = await postsRepository.delete(req.params.id)
-    if (!isDeletedPost) {
+    const isPostDeleted = await postsService.deletePost(req.params.id)
+
+    if (!isPostDeleted) {
         res.sendStatus(404)
         return
     }

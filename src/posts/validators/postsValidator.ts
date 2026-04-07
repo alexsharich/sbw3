@@ -1,9 +1,9 @@
 import {body} from "express-validator";
 import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErrorMiddleware";
-import {blogsRepository} from "../../blogs/repositories/blogs.repository";
+import {blogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
 import {NextFunction, Request, Response} from "express";
-import {postsRepository} from "../repositories/posts.repository";
 import {adminMiddleware} from "../../global-middleware/admin.middleware";
+import {postsQueryRepository} from "../repositories/posts.query.repository";
 
 export const titleValidator = body('title').isString().withMessage('not string').isLength({
     min: 1,
@@ -18,14 +18,14 @@ export const contentValidator = body('content').isString().withMessage('not stri
     max: 1000
 }).withMessage('more than 1000 or 0')
 export const blogIdValidator = body('blogId').isString().withMessage('not string').trim().custom(async (blogId: string) => {
-    const blog = await blogsRepository.getById(blogId)
+    const blog = await blogsQueryRepository.getById(blogId)
     if (!blog) {
         throw new Error('blog not found')
         return true
     }
 }).withMessage('no blog')
 export const findPostValidator = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
-    const post = await postsRepository.getById(req.params.id)
+    const post = await postsQueryRepository.getById(req.params.id)
     if (!post) {
         res.status(404).json({})
         return

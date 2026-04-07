@@ -1,6 +1,6 @@
 import {InputPostType} from "../../input-output-types/posts.type";
-import {blogsRepository} from "../../blogs/repositories/blogs.repository";
-import {postsRepository} from "../repositories/posts.repository";
+import {blogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
+import {postsCommandRepository} from "../repositories/posts.command.repository";
 
 export type PostType = {
     title: string,
@@ -13,7 +13,7 @@ export type PostType = {
 
 export const postsService = {
     async createPost(body: InputPostType) {
-        const existBlog = await blogsRepository.getById(body.blogId)///к сервису или репе
+        const existBlog = await blogsQueryRepository.getById(body.blogId)
         if (existBlog) {
             const newPost: PostType = {
                 title: body.title,
@@ -23,9 +23,15 @@ export const postsService = {
                 blogName: existBlog.name,
                 createdAt: (new Date().toISOString())
             }
-            return await postsRepository.create(newPost)
+            return await postsCommandRepository.create(newPost)
         } else {
             return null
         }
+    },
+    async deletePost(id: string) {
+        return await postsCommandRepository.delete(id)
+    },
+    async updatePost({params, body}: any) {
+        return await postsCommandRepository.update({params, body})
     }
 }

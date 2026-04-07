@@ -1,11 +1,9 @@
 import {Post} from "../../routes/posts-router/posts.router";
 import {ObjectId, WithId} from "mongodb";
-import {blogsCollection, postsCollection} from "../../repositories/db/db";
+import {postsCollection} from "../../repositories/db/db";
 import {PostType} from "../services/posts.service";
 import {OutputPostType, PostDBType} from "../../input-output-types/posts.type";
 import {OutputBlogType} from "../../input-output-types/blogs.type";
-import {PaginationQueriesType} from "../../helpers/pagination.values";
-import {SortMongoType} from "../../blogs/repositories/blogs.repository";
 
 
 const posts: Array<Post> = []
@@ -29,53 +27,8 @@ export type MapToOutputWithPagination = {
     "items": Array<OutputPostType> | Array<OutputBlogType>
 }
 
-export const postsRepository = {
-    async getAll(query: PaginationQueriesType) {
-        try {
-            const pageNumber = query.pageNumber
-            const pageSize = query.pageSize
-            const sortBy = query.sortBy
-            const sortDirection = query.sortDirection === 'asc' ? 1 : -1
-            const searchNameTerm = query.searchNameTerm
-            let filter = {}
-            if (searchNameTerm) {
-                filter = {$regex: searchNameTerm, $option: 'i'}
-            }
-            const sortFilter: SortMongoType = {[sortBy]: sortDirection} as SortMongoType
-            const posts = await postsCollection
-                .find(filter)
-                .sort(sortFilter)
-                .skip((pageNumber - 1) * pageSize)
-                .limit(+pageSize)
-                .toArray()
+export const postsCommandRepository = {
 
-            const totalCount = await blogsCollection.countDocuments(filter)
-
-
-            return {
-                pagesCount: Math.ceil(totalCount / query.pageSize),
-                page: query.pageNumber,
-                pageSize: query.pageSize,
-                totalCount: totalCount,
-                items: posts.map((post: WithId<PostDBType>) => mapToOutputPost(post))
-            }
-        } catch (e) {
-
-            console.log('Get posts for selected blog Error')
-            return null
-        }
-    },
-    async getById(id: string): Promise<PostDBType | null> {
-
-        try {
-            const postId = new ObjectId(id)
-            const post = await postsCollection.findOne({_id: postId})
-            if (post) return mapToOutputPost(post)
-            return null
-        } catch (e) {
-            return null
-        }
-    },
     async create(newPost: PostType) {
         try {
             const createdPost = await postsCollection.insertOne(newPost)

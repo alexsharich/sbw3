@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import {postsRepository} from "../repositories/posts.repository";
 import {postsService} from "../services/posts.service";
+import {postsQueryRepository} from "../repositories/posts.query.repository";
 
 export const createPostController = async (req: Request, res: Response) => {
 
@@ -11,9 +11,8 @@ export const createPostController = async (req: Request, res: Response) => {
         return
     }
 
-    const newPost = await postsRepository.getById(newPostCreated.toString())
+    const newPost = await postsQueryRepository.getById(newPostCreated.toString())
     if (!newPost) {
-
         res.sendStatus(400)
         return
     }
