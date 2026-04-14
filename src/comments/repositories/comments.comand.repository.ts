@@ -1,5 +1,7 @@
 import {commentsCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
+import {CommentType} from "../../input-output-types/comments.type";
+import {mapToOutputComment} from "./comments.query.repository";
 
 export const commentsCommandRepository = {
     async delete(id: string) {
@@ -30,12 +32,20 @@ export const commentsCommandRepository = {
         try {
             const commentId = new ObjectId(id)
             const comment = await commentsCollection.findOne({_id: commentId})
-            if (comment) {
-                return comment
-            }
-            throw new Error('Comment doesnt exist ... ')
-        } catch (error) {
+            if (comment) return mapToOutputComment(comment)
+            return null
+        } catch (e) {
             return null
         }
-    }
+    },
+    async createComment(newComment: CommentType): Promise<any> {
+        try {
+            const createdComment = await commentsCollection.insertOne(newComment)
+            console.log('CREATED COMMENT : ', createdComment)
+            return createdComment.insertedId.toHexString()
+        } catch (error) {
+            console.log('Create blog error : ', error)
+            return null
+        }
+    },
 }

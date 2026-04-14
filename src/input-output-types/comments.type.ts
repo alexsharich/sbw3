@@ -21,3 +21,13 @@ export type OutputCommentType = {
 export type InputCommentType = {
     content: string
 }
+
+export type CommentType = {
+    postId: "string",
+    content: "string",
+    commentatorInfo: {
+        userId: "string",
+        userLogin: "string"
+    },
+    createdAt: string
+}

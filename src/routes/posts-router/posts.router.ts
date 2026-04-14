@@ -6,6 +6,10 @@ import {createPostController} from "../../posts/controllers/create.post.controll
 import {updatePostController} from "../../posts/controllers/update.post.controller";
 import {deletePostController} from "../../posts/controllers/delete.post.controller";
 import {findPostController} from "../../posts/controllers/find.post.controller";
+import {getCommentsForPostController} from "../../posts/controllers/get.comments.for.post.controller";
+import {authMiddleware} from "../../global-middleware/auth.middleware";
+import {createCommentForPostContrloller} from "../../posts/controllers/create.comment.for.post";
+import {commentContentValidator} from "../../comments/validators/comment.validators";
 
 export const postsRouter = Router({})
 
@@ -24,8 +28,8 @@ export type Post = {
     blogName: string | undefined
 }
 
-postsRouter.get('/:id/comments',()=>{})//comments for blog
-postsRouter.post('/:id/comments',()=>{})//create comment for blog
+postsRouter.get('/:id/comments', getCommentsForPostController)
+postsRouter.post('/:id/comments', authMiddleware, ...commentContentValidator, createCommentForPostContrloller)//create comment for blog
 
 postsRouter.get('/', getPostsController)
 postsRouter.post('/', ...postsValidator, createPostController)

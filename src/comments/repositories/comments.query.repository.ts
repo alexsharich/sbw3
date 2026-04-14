@@ -1,9 +1,10 @@
 import {commentsCollection} from "../../repositories/db/db";
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 import {PaginationQueriesCommentType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
+import {CommentDBType} from "../../input-output-types/comments.type";
 
-/*export const mapToOutputComment = (comment: WithId<CommentDBType>): any => {
+export const mapToOutputComment = (comment: WithId<CommentDBType>): any => {
     return {
         id: comment._id.toString(),
         content: comment.content,
@@ -13,22 +14,20 @@ import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
         },
         createdAt: comment.createdAt
     }
-}*/
+}
 
 export const commentsQueryRepository = {
     async find(id: string) {
         try {
             const commentId = new ObjectId(id)
             const comment = await commentsCollection.findOne({_id: commentId})
-            if (comment) {
-                return comment
-            }
-            throw new Error('Comment doesnt exist ... ')
-        } catch (error) {
+            if (comment) return mapToOutputComment(comment)
+            return null
+        } catch (e) {
             return null
         }
     },
-    /*async getComments(query: PaginationQueriesCommentType, postId) {
+    async getComments(query: PaginationQueriesCommentType, postId: string) {
         try {
             const pageNumber = +query.pageNumber
             const pageSize = +query.pageSize
@@ -57,5 +56,5 @@ export const commentsQueryRepository = {
             console.log('Get posts for selected blog Error')
             return null
         }
-    }*/
+    }
 }

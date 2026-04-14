@@ -1,4 +1,7 @@
 import {commentsCommandRepository} from "../repositories/comments.comand.repository";
+import {postsService} from "../../posts/services/posts.service";
+import {commentsQueryRepository} from "../repositories/comments.query.repository";
+import {CommentType} from "../../input-output-types/comments.type";
 
 export const commentsService = {
     async delete(userId: string, commentId: string) {
@@ -22,4 +25,24 @@ export const commentsService = {
         }
         return 'forbidden'
     },
+    async createComment({userId, userLogin, postId, comment}: any) {
+
+        const existPost = await postsService.findPost(postId)
+        if (existPost) {
+            const newComment: CommentType = {
+                postId,
+                content: comment,
+                commentatorInfo: {
+                    userId,
+                    userLogin
+                },
+                createdAt: (new Date().toISOString())
+            }
+            const createdCommentId = await commentsCommandRepository.createComment(newComment)
+            if (createdCommentId) {
+                return await commentsCommandRepository.find(createdCommentId)
+            }
+        }
+
+    }
 }
