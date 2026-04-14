@@ -7,8 +7,10 @@ export const SETTINGS = {
     PATH: {
         BLOGS: '/blogs',
         POSTS: '/posts',
+        USERS: '/users',
         TESTING: '/testing'
     },
     ADMIN_AUTH: 'admin:qwerty',
-    MONGO_URL: process.env.MONGO_URL
+    MONGO_URL: process.env.MONGO_URL,
+    JWT: process.env.JWT_SECRET || '111'
 }

@@ -24,6 +24,9 @@ export type Post = {
     blogName: string | undefined
 }
 
+postsRouter.get('/:id/comments',()=>{})//comments for blog
+postsRouter.post('/:id/comments',()=>{})//create comment for blog
+
 postsRouter.get('/', getPostsController)
 postsRouter.post('/', ...postsValidator, createPostController)
 postsRouter.get('/:id', findPostValidator, findPostController)

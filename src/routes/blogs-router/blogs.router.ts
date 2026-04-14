@@ -17,6 +17,10 @@ export type BlogDto = {
 
 blogsRouter.get('/', getBlogsController)
 blogsRouter.post('/', ...blogValidator, createBlogController)
+
+blogsRouter.get('/:id/posts',()=>{})//return all posts for blog
+blogsRouter.post('/:id/posts',()=>{})//create new post for blog
+
 blogsRouter.get('/:id', findBlogValidator, findBlogController)
 blogsRouter.put('/:id', findBlogValidator, ...blogValidator, updateBlogController)
 blogsRouter.delete('/:id', adminMiddleware, findBlogValidator, deleteBlogController)
