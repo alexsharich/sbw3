@@ -5,6 +5,8 @@ config()
 export const SETTINGS = {
     PORT: process.env.PORT || 3000,
     PATH: {
+        AUTH: '/auth',
+        COMMENTS: '/comments',
         BLOGS: '/blogs',
         POSTS: '/posts',
         USERS: '/users',

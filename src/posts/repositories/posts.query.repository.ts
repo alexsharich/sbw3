@@ -52,4 +52,36 @@ export const postsQueryRepository = {
             return null
         }
     },
+    async getPostsForSelectedBlog({blogId, query}: { blogId: string, query: PaginationQueriesType }): Promise<any> {
+
+        try {
+            const pageNumber = query.pageNumber
+            const pageSize = query.pageSize
+            const sortBy = query.sortBy
+            const sortDirection = query.sortDirection === 'asc' ? 1 : -1
+
+            let filter = {blogId: blogId}
+
+            const sortFilter: SortMongoType = {[sortBy]: sortDirection} as SortMongoType
+            const posts = await postsCollection
+                .find(filter).sort(sortFilter)
+                .skip((pageNumber - 1) * pageSize)
+                .limit(pageSize)
+                .toArray()
+
+            const totalCount = await postsCollection.countDocuments(filter)
+
+            return {
+                pagesCount: Math.ceil(totalCount / query.pageSize),
+                page: query.pageNumber,
+                pageSize: query.pageSize,
+                totalCount: totalCount,
+                items: posts.map((post: WithId<PostDBType>) => mapToOutputPost(post))
+            }
+
+        } catch (e) {
+            console.log('Get posts for selected blog Error')
+            return null
+        }
+    },
 }

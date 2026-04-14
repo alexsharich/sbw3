@@ -71,5 +71,16 @@ export const postsCommandRepository = {
         } catch (e) {
             return null
         }
-    }
+    },
+    async find(id: string): Promise<PostDBType | null> {
+
+        try {
+            const postId = new ObjectId(id)
+            const post = await postsCollection.findOne({_id: postId})
+            if (post) return mapToOutputPost(post)
+            return null
+        } catch (e) {
+            return null
+        }
+    },
 }

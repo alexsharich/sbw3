@@ -1,4 +1,4 @@
-import {InputPostType} from "../../input-output-types/posts.type";
+import {InputPostType, PostDBType} from "../../input-output-types/posts.type";
 import {blogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
 import {postsCommandRepository} from "../repositories/posts.command.repository";
 
@@ -33,5 +33,8 @@ export const postsService = {
     },
     async updatePost({params, body}: any) {
         return await postsCommandRepository.update({params, body})
-    }
+    },
+    async findPost(id: string): Promise<PostDBType | null> {
+        return await postsCommandRepository.find(id)
+    },
 }

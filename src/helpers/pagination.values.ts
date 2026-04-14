@@ -35,3 +35,20 @@ export const paginationQueriesForUsers = (query: PaginationQueriesUsersType) => 
 
     return {pageNumber, pageSize, sortBy, sortDirection, searchLoginTerm, searchEmailTerm}
 }
+
+export type PaginationQueriesCommentType = {
+    pageNumber: number
+    pageSize: number
+    sortBy: string
+    sortDirection: SortType
+}
+
+
+export const paginationQueriesComment = (query: PaginationQueriesCommentType) => {
+    const pageNumber = query.pageNumber ? +query.pageNumber : 1
+    const pageSize = query.pageSize ? +query.pageSize : 10
+    const sortBy = query.sortBy ? query.sortBy.toString() : 'createdAt'
+    const sortDirection: SortType = query.sortDirection && query.sortDirection === 'asc' ? 'asc' : 'desc'
+
+    return {pageNumber, pageSize, sortBy, sortDirection}
+}

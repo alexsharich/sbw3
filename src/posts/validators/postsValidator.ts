@@ -1,4 +1,4 @@
-import {body} from "express-validator";
+import {body, param} from "express-validator";
 import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErrorMiddleware";
 import {blogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
 import {NextFunction, Request, Response} from "express";
@@ -32,6 +32,25 @@ export const findPostValidator = async (req: Request<{ id: string }>, res: Respo
     }
     next()
 }
+export const blogIdInParamsValidator = param('id').isString().withMessage('not string')
+    .trim().custom(async (blogId: string) => {
+        const blog = await blogsQueryRepository.getById(blogId)
+        if (!blog) {
+            throw new Error('blog not found !')
+        }
+        return true
+    }).withMessage('no blog')
+
+export const postForBlogValidator = [
+    adminMiddleware,
+
+    titleValidator,
+    shortDescriptionValidator,
+    contentValidator,
+    blogIdInParamsValidator,
+
+    inputCheckErrorsMiddleware,
+]
 
 export const postsValidator = [
     adminMiddleware,
