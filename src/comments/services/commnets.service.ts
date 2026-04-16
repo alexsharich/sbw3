@@ -1,6 +1,5 @@
 import {commentsCommandRepository} from "../repositories/comments.comand.repository";
 import {postsService} from "../../posts/services/posts.service";
-import {commentsQueryRepository} from "../repositories/comments.query.repository";
 import {CommentType} from "../../input-output-types/comments.type";
 
 export const commentsService = {
