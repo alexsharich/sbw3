@@ -1,17 +1,18 @@
 import {usersCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
-import {OutputUserType, UserDBType} from "../../input-output-types/users.type";
+import {OutputUserType, UserAccountDBType, UserDBType} from "../../input-output-types/users.type";
 import {PaginationQueriesUsersType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
 
-const mapToOutputUser = (user: WithId<UserDBType>): OutputUserType => {
+const mapToOutputUser = (user: WithId<UserAccountDBType>): OutputUserType => {
     return {
         id: user._id.toString(),
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt
+        login: user.accountData.userName,
+        email: user.accountData.email,
+        createdAt: user.accountData.createdAt
     }
 }
+
 interface UserFilter {
     $or?: Array<{ [key: string]: any }>
 }
@@ -19,6 +20,9 @@ interface UserFilter {
 export const usersQueryRepository = {
     async findUserWithEmailOrLogin(emailOrLogin: string) {
         return await usersCollection.findOne({$or: [{login: emailOrLogin}, {email: emailOrLogin}]})
+    },
+    async checkUniqUserWithEmailOrLogin(login: string, email: string) {
+        return await usersCollection.findOne({$or: [{'accountData.userName': login}, {'accountData.email': email}]})
     },
     async findUser(id: string): Promise<OutputUserType | null> {
         try {
@@ -68,7 +72,7 @@ export const usersQueryRepository = {
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount: totalCount,
-                items: users.map((user: WithId<UserDBType>) => mapToOutputUser(user))
+                items: users.map((user: WithId<UserAccountDBType>) => mapToOutputUser(user))
             }
         } catch (e) {
             throw new Error('Users not found')
