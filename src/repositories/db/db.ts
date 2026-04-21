@@ -1,7 +1,7 @@
 import {Collection, Db, MongoClient} from 'mongodb';
 import {BlogDBType} from "../../input-output-types/blogs.type";
 import {PostDBType} from "../../input-output-types/posts.type";
-import {UserAccountDBType, UserDBType} from "../../input-output-types/users.type";
+import {UserAccountDBType} from "../../input-output-types/users.type";
 import {CommentDBType} from "../../input-output-types/comments.type";
 
 

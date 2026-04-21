@@ -30,7 +30,7 @@ export const authService = {
                 userName: login,
                 email,
                 passwordHash,
-                createdAt: new Date().toString()
+                createdAt: new Date().toISOString()
             },
             emailConfirmation: {
                 confirmationCode: uuidv4(),
@@ -56,8 +56,8 @@ export const authService = {
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.expirationDate < new Date()) return false
-        let result = await usersCommandRepository.updateConfirmation(user._id)
-        return result
+        return await usersCommandRepository.updateConfirmation(user._id)
+
     },
     async resendingEmail(email: string) {
         const user = await usersCommandRepository.findUserWithEmailOrLogin(email)

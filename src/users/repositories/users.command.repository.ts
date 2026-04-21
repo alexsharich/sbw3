@@ -11,9 +11,9 @@ export const usersCommandRepository = {
     async createUser(user: UserAccountDBType): Promise<string | null> {
         try {
             const createdUser = await usersCollection.insertOne(user)
-            return createdUser.insertedId.toHexString()
+            return createdUser.insertedId.toString()
         } catch (e) {
-            console.log('Create blog error : ', e)
+            console.log('Create user error : ', e)
             return null
         }
     },
@@ -34,8 +34,8 @@ export const usersCommandRepository = {
         return await usersCollection.findOne({$or: [{login: login}, {email: email}]})
     },
     async findUserByConfirmationCode(emailConfirmationCode: string) {
-        const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': emailConfirmationCode})
-        return user
+        return await usersCollection.findOne({'emailConfirmation.confirmationCode': emailConfirmationCode})
+
     },
     async updateConfirmation(userId: any) {
         const result = await usersCollection.updateOne({_id: userId}, {$set: {'emailConfirmation.isConfirmed': true}})
