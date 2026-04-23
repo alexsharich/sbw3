@@ -20,5 +20,12 @@ export const jwtServise = {
         } catch (error) {
             return null
         }
-    }
+    },
+    verifyRefreshToken(token: string) {
+        try {
+            return jwt.verify(token, SETTINGS.JWT_REFRESH) as { userId: string }
+        } catch (error) {
+            return null
+        }
+    },
 }

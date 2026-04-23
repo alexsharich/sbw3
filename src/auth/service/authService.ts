@@ -69,4 +69,10 @@ export const authService = {
         await businessServis.sendEmail(updatedUser!.accountData.email, 'Resending email', ' Resending message', updatedUser?.emailConfirmation.confirmationCode)
         return true
     },
+    async addTokenToBlackList(oldRefreshToken: string) {
+        return await usersCommandRepository.tokenToBlackList(oldRefreshToken)
+    },
+    async checkTokenInBlackList(refreshToken: string) {
+        return await usersCommandRepository.checkTokenInBlackList(refreshToken)
+    }
 }

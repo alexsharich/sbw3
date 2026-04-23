@@ -14,5 +14,6 @@ export const SETTINGS = {
     },
     ADMIN_AUTH: 'admin:qwerty',
     MONGO_URL: process.env.MONGO_URL,
-    JWT: process.env.JWT_SECRET || '111'
+    JWT: process.env.JWT_SECRET || '111',
+    JWT_REFRESH: process.env.JWT_REFRESH_SECRET || '333'
 }

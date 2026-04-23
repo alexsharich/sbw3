@@ -1,4 +1,4 @@
-import {usersCollection} from "../../repositories/db/db";
+import {blackListCollection, usersCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
 import {UserAccountDBType} from "../../input-output-types/users.type";
 import {add} from "date-fns/add";
@@ -50,4 +50,14 @@ export const usersCommandRepository = {
             }
         })
     },
+    async tokenToBlackList(oldRefreshToken: string) {
+        const oldTokenId = await blackListCollection.insertOne({
+            token: oldRefreshToken
+        })
+        console.log(oldTokenId.acknowledged)
+        return oldTokenId.acknowledged
+    },
+    async checkTokenInBlackList(refreshToken: string) {
+        return await blackListCollection.findOne({token: refreshToken})
+    }
 }
