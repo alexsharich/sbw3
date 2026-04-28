@@ -1,6 +1,6 @@
 import {usersCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
-import {OutputUserType, UserAccountDBType, UserDBType} from "../../input-output-types/users.type";
+import {OutputUserType, UserAccountDBType} from "../../input-output-types/users.type";
 import {PaginationQueriesUsersType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
 
