@@ -15,13 +15,14 @@ import {registrationEmailResendingController} from "../../auth/controllers/regis
 import {logoutController} from "../../auth/controllers/logout.controller";
 import {authRefreshMiddleware} from "../../global-middleware/auth.refresh.middleware";
 import {refreshTokenController} from "../../auth/controllers/refresh.token.controller";
+import {apiRequestMiddleware} from "../../devices/middlewares/device.middleware";
 
 export const authRouter = Router({})
 
 authRouter.post('/login', authValidator, loginController)
 authRouter.get('/me', meValidator, authMiddleware, meController)
-authRouter.post('/registration', registrationValidator, isCreatedUserValidator, registrationController)
-authRouter.post('registration-confirmation', emailCodeResendingValidator, registrationConfirmationController)
-authRouter.post('/registration-email-resending', emailValidator, registrationEmailResendingController)
+authRouter.post('/registration', registrationValidator, apiRequestMiddleware, isCreatedUserValidator, registrationController)
+authRouter.post('registration-confirmation', emailCodeResendingValidator, apiRequestMiddleware, registrationConfirmationController)
+authRouter.post('/registration-email-resending', emailValidator, apiRequestMiddleware, registrationEmailResendingController)
 authRouter.post('/logout', authRefreshMiddleware, logoutController)
 authRouter.post('/refresh-token', authRefreshMiddleware, refreshTokenController)

@@ -1,18 +1,26 @@
 import {Request, Response} from "express";
-import {authService} from "../service/authService";
 import {daysToMs} from "../../helpers/days.to.ms";
 import {jwtServise} from "../../application/jwtService";
+import {devicesService} from "../../devices/services/devices.service";
+import {ObjectId} from "mongodb";
 
 export const refreshTokenController = async (req: Request, res: Response) => {
-    const oldRefreshToken = req.cookies.refreshToken
     const userId = req.userId
+    const deviceId = req.deviceId
     if (!userId) {
         res.sendStatus(401)
         return
     }
 
-    await authService.addTokenToBlackList(oldRefreshToken)
-    const {accessToken, refreshToken} = jwtServise.createToken(userId)
+    const {accessToken, refreshToken} = jwtServise.createToken(userId, String(deviceId))
+    const tokenDecoded = jwtServise.decodeToken(refreshToken)
+
+    if (!tokenDecoded) {
+        res.sendStatus(401)
+        return
+    }
+    await devicesService.updateDevice(new ObjectId(deviceId!), new Date(tokenDecoded?.exp! * 1000).toISOString(), new Date(tokenDecoded?.iat! * 1000).toISOString())
+
     res.cookie('refreshToken', refreshToken, {
         maxAge: (daysToMs(3)),
         httpOnly: true,

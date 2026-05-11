@@ -24,7 +24,10 @@ export const devicesService = {
         if (device.userId !== userId) {
             return STATUS_CODE_DEVICES.FORBIDDEN
         }
-        await devicesCollection.deleteOne({_id: new ObjectId(deviceId)})
+        const deviceIsDeleted = await devicesCommandRepository.deleteDevice(deviceId)
+        if (!deviceIsDeleted) {
+            return STATUS_CODE_DEVICES.NOT_FOUND
+        }
         return STATUS_CODE_DEVICES.NO_CONTENT
     },
     async deleteDevices(deviceId: string, userId: string): Promise<boolean> {
