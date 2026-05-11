@@ -1,5 +1,10 @@
-import jwt from 'jsonwebtoken'
+import jwt, {JwtPayload} from 'jsonwebtoken'
 import {SETTINGS} from "../settings";
+
+interface MyJwtPayload extends JwtPayload {
+    userId: string
+    deviceId: string
+}
 
 export const jwtServise = {
     createToken(userId: string) {
@@ -24,7 +29,7 @@ export const jwtServise = {
     },
     verifyRefreshToken(token: string) {
         try {
-            return jwt.verify(token, SETTINGS.JWT_REFRESH) as { userId: string }
+            return <MyJwtPayload>jwt.verify(token, SETTINGS.JWT_REFRESH)
         } catch (error) {
             return null
         }

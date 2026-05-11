@@ -8,6 +8,7 @@ import {testingRouter} from "./routes/testing/testing.router";
 import {usersRouter} from "./routes/users-router/users.router";
 import {authRouter} from "./routes/auth-router/auth.router";
 import {commentsRouter} from "./routes/comments-router/comments.router";
+import {devicesRouter} from "./routes/devices-router/devices.router";
 
 
 export const setupApp = async (app: Express) => {
@@ -21,6 +22,7 @@ export const setupApp = async (app: Express) => {
     app.use(SETTINGS.PATH.USERS, usersRouter)
     app.use(SETTINGS.PATH.AUTH, authRouter)
     app.use(SETTINGS.PATH.COMMENTS, commentsRouter)
+    app.use(SETTINGS.PATH.DEVICES, devicesRouter)
 
     return app;
 };

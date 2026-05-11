@@ -10,7 +10,8 @@ export const SETTINGS = {
         BLOGS: '/blogs',
         POSTS: '/posts',
         USERS: '/users',
-        TESTING: '/testing'
+        TESTING: '/testing',
+        DEVICES: '/security'
     },
     ADMIN_AUTH: 'admin:qwerty',
     MONGO_URL: process.env.MONGO_URL,

@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {jwtServise} from "../application/jwtService";
 import {authService} from "../auth/service/authService";
+import {devicesQueryRepository} from "../devices/repositories/devices.query.repository";
 
 export const authRefreshMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies.refreshToken as string
@@ -10,16 +11,33 @@ export const authRefreshMiddleware = async (req: Request, res: Response, next: N
         return
     }
     const token = jwtServise.verifyRefreshToken(refreshToken)
-    if (!token) {
+    if (!token?.userId || !token.deviceId) {
         res.sendStatus(401)
         return
     }
     const userId = token.userId
-    const checkNewTokenInBlackList = await authService.checkTokenInBlackList(refreshToken)
-    if (checkNewTokenInBlackList) {
+    const deviceId = token.deviceId
+    const iat = token.iat
+
+    const device = await devicesQueryRepository.getDeviceById(deviceId)
+
+    if (!device) {
         res.sendStatus(401)
         return
     }
+
+    if (device.userId !== userId) {
+        res.sendStatus(401)
+        return
+    }
+
+    if (device.createdAt !== new Date(iat! * 1000).toISOString()) {
+        res.sendStatus(401)
+        return
+    }
+
     req.userId = userId
+    req.deviceId = deviceId
+
     next()
 }
