@@ -1,28 +1,30 @@
 import {Router} from "express";
-import {loginController} from "../../auth/controllers/login.controller";
-import {meController} from "../../auth/controllers/me.controller";
 import {
     authValidator, emailCodeResendingValidator,
     isCreatedUserValidator,
     meValidator,
+    newPasswordValidator,
     registrationValidator
 } from "../../auth/middlewares/authValidator";
 import {authMiddleware} from "../../global-middleware/auth.middleware";
-import {registrationController} from "../../auth/controllers/registration.controller";
-import {registrationConfirmationController} from "../../auth/controllers/registration.confirmation.controller";
 import {emailValidator} from "../../users/middlewares/users.validator";
-import {registrationEmailResendingController} from "../../auth/controllers/registration.email.resending.controller";
-import {logoutController} from "../../auth/controllers/logout.controller";
 import {authRefreshMiddleware} from "../../global-middleware/auth.refresh.middleware";
-import {refreshTokenController} from "../../auth/controllers/refresh.token.controller";
 import {apiRequestMiddleware} from "../../devices/middlewares/device.middleware";
+import {AuthController} from "../../auth/controllers/auth.controller";
+import {container} from "../../composition-root";
+import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErrorMiddleware";
 
-export const authRouter = Router({})
 
-authRouter.post('/login', authValidator, loginController)
-authRouter.get('/me', meValidator, authMiddleware, meController)
-authRouter.post('/registration', registrationValidator, apiRequestMiddleware, isCreatedUserValidator, registrationController)
-authRouter.post('registration-confirmation', emailCodeResendingValidator, apiRequestMiddleware, registrationConfirmationController)
-authRouter.post('/registration-email-resending', emailValidator, apiRequestMiddleware, registrationEmailResendingController)
-authRouter.post('/logout', authRefreshMiddleware, logoutController)
-authRouter.post('/refresh-token', authRefreshMiddleware, refreshTokenController)
+const authController = container.get(AuthController)
+export const authRouter = Router()
+
+authRouter.post('/login', authValidator, authController.login.bind(authController))
+authRouter.get('/me', meValidator, authMiddleware, authController.me.bind(authController))
+authRouter.post('/registration', registrationValidator, apiRequestMiddleware, isCreatedUserValidator, authController.registration.bind(authController))
+authRouter.post('registration-confirmation', emailCodeResendingValidator, apiRequestMiddleware, authController.registrationConfirmation.bind(authController))
+authRouter.post('/registration-email-resending', emailValidator, apiRequestMiddleware, authController.resendRegistrationCode.bind(authController))
+authRouter.post('/logout', authRefreshMiddleware, authController.logout.bind(authController))
+authRouter.post('/refresh-token', authRefreshMiddleware, authController.refreshToken.bind(authController))
+
+authRouter.post('/password-recovery', emailValidator, inputCheckErrorsMiddleware, apiRequestMiddleware, authController.passwordRecovery.bind(authController))
+authRouter.post('/new-password', newPasswordValidator, inputCheckErrorsMiddleware, apiRequestMiddleware, authController.newPassword.bind(authController))

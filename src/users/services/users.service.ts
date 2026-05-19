@@ -1,14 +1,18 @@
-import {usersCommandRepository} from "../repositories/users.command.repository";
+import {UsersCommandRepository} from "../repositories/users.command.repository";
 import {InputUserType} from "../../input-output-types/users.type";
 import bcrypt from "bcrypt";
 import {ObjectId} from "mongodb";
 import {add} from "date-fns/add";
 import {v4 as uuidv4} from "uuid";
+import {inject, injectable} from "inversify";
 
-export const usersService = {
+@injectable()
+export class UsersService {
+    constructor(@inject(UsersCommandRepository) private usersCommandRepository: UsersCommandRepository) {
+    }
     async createUser(user: InputUserType, isAdmin: boolean = false) {
         const errors = []
-        const isUnique = await usersCommandRepository.checkUniqUserWithEmailOrLogin(user.login, user.email)
+        const isUnique = await this.usersCommandRepository.checkUniqUserWithEmailOrLogin(user.login, user.email)
         if (isUnique) {
             if (isUnique.accountData.email === user.email) {
                 errors.push({field: 'email', message: 'email should be unique'})
@@ -37,9 +41,9 @@ export const usersService = {
                 isConfirmed: isAdmin ? true : false
             }
         }
-        return await usersCommandRepository.createUser(newUser)
-    },
+        return await this.usersCommandRepository.createUser(newUser)
+    }
     async deleteUser(id: string): Promise<boolean> {
-        return await usersCommandRepository.deleteUser(id)
+        return await this.usersCommandRepository.deleteUser(id)
     }
 }

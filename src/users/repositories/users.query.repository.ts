@@ -3,6 +3,7 @@ import {ObjectId, WithId} from "mongodb";
 import {OutputUserType, UserAccountDBType} from "../../input-output-types/users.type";
 import {PaginationQueriesUsersType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
+import {injectable} from "inversify";
 
 const mapToOutputUser = (user: WithId<UserAccountDBType>): OutputUserType => {
     return {
@@ -16,14 +17,14 @@ const mapToOutputUser = (user: WithId<UserAccountDBType>): OutputUserType => {
 interface UserFilter {
     $or?: Array<{ [key: string]: any }>
 }
-
-export const usersQueryRepository = {
+@injectable()
+export class UsersQueryRepository  {
     async findUserWithEmailOrLogin(emailOrLogin: string) {
         return await usersCollection.findOne({$or: [{login: emailOrLogin}, {email: emailOrLogin}]})
-    },
+    }
     async checkUniqUserWithEmailOrLogin(login: string, email: string) {
         return await usersCollection.findOne({$or: [{'accountData.userName': login}, {'accountData.email': email}]})
-    },
+    }
     async findUser(id: string): Promise<OutputUserType | null> {
         try {
             const userId = new ObjectId(id)
@@ -34,7 +35,7 @@ export const usersQueryRepository = {
             console.log('User repository, find user / find user ', e)
             return null
         }
-    },
+    }
     async getUsers(query: PaginationQueriesUsersType) {
         try {
             const pageNumber = query.pageNumber
@@ -77,5 +78,9 @@ export const usersQueryRepository = {
         } catch (e) {
             throw new Error('Users not found')
         }
-    },
+    }
+
+    async findUserByRecoveryCode(passwordRecovery: string) {
+        return await usersCollection.findOne({passwordRecovery})
+    }
 }

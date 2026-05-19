@@ -1,15 +1,23 @@
 import {LoginInputType} from "../controllers/login.controller";
 import bcrypt from 'bcrypt'
-import {usersQueryRepository} from "../../users/repositories/users.query.repository";
+import {UsersQueryRepository, usersQueryRepository} from "../../users/repositories/users.query.repository";
 import {ObjectId} from "mongodb";
 import {add} from "date-fns/add";
 import {v4 as uuidv4} from 'uuid'
-import {usersCommandRepository} from "../../users/repositories/users.command.repository";
+import {UsersCommandRepository, usersCommandRepository} from "../../users/repositories/users.command.repository";
 import {emailManager} from "../../managers/emailManager";
 import {businessServis} from "../../domain/business.service";
+import {EmailAdapter} from "../../adapters/email.adapter";
+import {emailExamples} from "../../helpers/email.templates";
+import {inject, injectable} from "inversify";
 
+@injectable()
+export class AuthService  {
+    constructor(@inject(UsersCommandRepository) private usersRepository: UsersCommandRepository,
+    @inject(EmailAdapter) private emailAdapter: EmailAdapter,
+    @inject(UsersQueryRepository) private usersQueryRepository: UsersQueryRepository){
 
-export const authService = {
+    }
     async loginWithEmailOrLogin({loginOrEmail, password}: LoginInputType): Promise<string | null> {
         const user = await usersQueryRepository.findUserWithEmailOrLogin(loginOrEmail)
         if (user) {
@@ -19,7 +27,7 @@ export const authService = {
             }
         }
         return null
-    },
+    }
     async createUser(login: string, email: string, password: string) {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt)
@@ -49,7 +57,7 @@ export const authService = {
             return null
         }
         return createResult
-    },
+    }
     async confirmEmail(code: string) {
         let user = await usersCommandRepository.findUserByConfirmationCode(code)
         if (!user) return false
@@ -58,7 +66,7 @@ export const authService = {
         if (user.emailConfirmation.expirationDate < new Date()) return false
         return await usersCommandRepository.updateConfirmation(user._id)
 
-    },
+    }
     async resendingEmail(email: string) {
         const user = await usersCommandRepository.findUserWithEmailOrLogin(email)
         if (!user || user.emailConfirmation.isConfirmed) {
@@ -68,11 +76,26 @@ export const authService = {
         const updatedUser = await usersCommandRepository.findUserWithEmailOrLogin(email)
         await businessServis.sendEmail(updatedUser!.accountData.email, 'Resending email', ' Resending message', updatedUser?.emailConfirmation.confirmationCode)
         return true
-    },
+    }
     async addTokenToBlackList(oldRefreshToken: string) {
         return await usersCommandRepository.tokenToBlackList(oldRefreshToken)
-    },
+    }
     async checkTokenInBlackList(refreshToken: string) {
         return await usersCommandRepository.checkTokenInBlackList(refreshToken)
+    }
+    async recoveryCode(userId: ObjectId, email: string) {
+        const codeRecovrey = uuidv4()
+        await this.usersCommandRepository.addRecoveryCode(userId, codeRecovrey)
+        await this.emailAdapter.sendEmail(email, 'recovery', 'recovery text message', emailExamples.passwordRecoveryEmail(codeRecovrey))
+    }
+    async  newPassword(newPassword: string, recoveryCode: string) {
+
+        const user = await usersQueryRepository.findUserByRecoveryCode(recoveryCode)
+        if (!user) {
+            return false
+        }
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(newPassword, salt)
+        return await usersCommandRepository.newPassword(user._id, passwordHash)
     }
 }

@@ -3,11 +3,19 @@ import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErro
 import {emailValidator, loginValidator} from "../../users/middlewares/users.validator";
 import {NextFunction, Request, Response} from "express";
 import {InputUserType} from "../../input-output-types/users.type";
-import {usersQueryRepository} from "../../users/repositories/users.query.repository";
+import {container} from "../../composition-root";
+import {UsersQueryRepository} from "../../users/repositories/users.query.repository";
+
+const usersQueryRepository = container.get(UsersQueryRepository)
 
 export const emailOrLoginValidator = body('loginOrEmail').trim().notEmpty().isString()
 
 export const passwordValidator = body('password').trim().notEmpty().isString()
+
+export const newPasswordValidator = body('newPassword').trim().notEmpty().isString().isLength({
+    min: 6,
+    max: 20
+}).withMessage('more then 20 or 5')
 
 export const userIdValidator = body('userId').trim().notEmpty().isString()
 

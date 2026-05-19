@@ -1,11 +1,11 @@
 import {Router} from "express";
 import {authRefreshMiddleware} from "../../global-middleware/auth.refresh.middleware";
-import {getDevicesController} from "../../devices/controllers/get.devices.controller";
-import {deleteDevicesController} from "../../devices/controllers/delete.devices.controller";
-import {deleteDeviceByIdController} from "../../devices/controllers/delete.devce.by.id.controller";
+import {container} from "../../composition-root";
+import {DeviceController} from "../../devices/controllers/device.controller";
 
+const deviceController = container.get(DeviceController)
 export const devicesRouter = Router({})
 
-devicesRouter.get('/devices', authRefreshMiddleware, getDevicesController)
-devicesRouter.delete('/devices', authRefreshMiddleware, deleteDevicesController)
-devicesRouter.delete('/devices/:deviceId', authRefreshMiddleware, deleteDeviceByIdController)
+devicesRouter.get('/devices', authRefreshMiddleware, deviceController.getDevices.bind(deviceController))
+devicesRouter.delete('/devices', authRefreshMiddleware, deviceController.deleteDevices.bind(deviceController))
+devicesRouter.delete('/devices/:deviceId', authRefreshMiddleware, deviceController.deleteDeviceById.bind(deviceController))
