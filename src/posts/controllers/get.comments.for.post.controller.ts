@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {postsQueryRepository} from "../repositories/posts.query.repository";
 import {paginationQueriesComment, PaginationQueriesCommentType} from "../../helpers/pagination.values";
@@ -19,4 +20,4 @@ export const getCommentsForPostController = async (req: Request<{
         res.status(200).json(posts)
         return
     }
-}
+}*/

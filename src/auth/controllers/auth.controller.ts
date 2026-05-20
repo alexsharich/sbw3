@@ -1,15 +1,15 @@
 import {AuthService} from "../service/authService";
 import {ObjectId} from "mongodb";
 import UAParser from "ua-parser-js";
-import {DevicesService, } from "../../devices/services/devices.service";
+import {DevicesService,} from "../../devices/services/devices.service";
 import {daysToMs} from "../../helpers/days.to.ms";
 import {Request, Response} from "express";
-import {LoginInputType} from "./login.controller";
 import {UsersQueryRepository} from "../../users/repositories/users.query.repository";
 import {UsersCommandRepository} from "../../users/repositories/users.command.repository";
 import {inject, injectable} from "inversify";
 import "reflect-metadata"
 import {JwtService} from "../../application/jwtService";
+import {LoginInputType} from "../../input-output-types/auth.type";
 
 @injectable()
 export class AuthController {
@@ -118,22 +118,25 @@ export class AuthController {
             res.status(204).send()
         }
     }
-    async registration (req:Request,res:Response){
-    const user = await this.authService.createUser(req.body.login,req.body.email,req.body.password)
-    if(user){
+
+    async registration(req: Request, res: Response) {
+        const user = await this.authService.createUser(req.body.login, req.body.email, req.body.password)
+        if (user) {
+            res.status(204).send()
+        } else {
+            res.status(400).send({errorsMessages: [{message: "Email error", field: "email"}]})
+        }
+    }
+
+    async resendRegistrationCode(req: Request, res: Response) {
+        const user = await this.authService.resendingEmail(req.body.email)
+        if (!user) {
+            res.status(400).send({errorsMessages: [{message: '123123', field: "email"}]})
+            return
+        }
         res.status(204).send()
-    }else {
-    res.status(400).send( { errorsMessages: [{ message: "Email error", field: "email" }] })
-}
-}
-    async resendRegistrationCode (req: Request, res: Response) {
-    const user = await this.authService.resendingEmail(req.body.email)
-    if (!user) {
-    res.status(400).send({errorsMessages: [{message: '123123', field: "email"}]})
-    return
-}
-res.status(204).send()
-}
+    }
+
     async newPassword(req: Request<{}, {}, {
         newPassword: string,
         recoveryCode: string
@@ -150,6 +153,7 @@ res.status(204).send()
         }
         res.sendStatus(204)
     }
+
     async passwordRecovery(req: Request<{}, {}, { email: string }, {}>, res: Response) {
         const user = await this.usersQueryRepository.findUserWithEmailOrLogin(req.body.email)
         if (user) {

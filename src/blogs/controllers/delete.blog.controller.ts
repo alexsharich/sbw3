@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {blogsService} from "../services/blogs.service";
 
@@ -10,4 +11,4 @@ export const deleteBlogController = async (req: Request, res: Response) => {
         return
     }
     res.sendStatus(204)
-}
+}*/

@@ -3,6 +3,7 @@ import {ObjectId, WithId} from "mongodb";
 import {PaginationQueriesCommentType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
 import {CommentDBType} from "../../input-output-types/comments.type";
+import {injectable} from "inversify";
 
 export const mapToOutputComment = (comment: WithId<CommentDBType>): any => {
     return {
@@ -16,7 +17,8 @@ export const mapToOutputComment = (comment: WithId<CommentDBType>): any => {
     }
 }
 
-export const commentsQueryRepository = {
+@injectable()
+export class CommentsQueryRepository  {
     async find(id: string) {
         try {
             const commentId = new ObjectId(id)
@@ -26,7 +28,7 @@ export const commentsQueryRepository = {
         } catch (e) {
             return null
         }
-    },
+    }
     async getComments(query: PaginationQueriesCommentType, postId: string) {
         try {
             const pageNumber = +query.pageNumber

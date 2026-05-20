@@ -1,6 +1,7 @@
 import {InputPostType, PostDBType} from "../../input-output-types/posts.type";
-import {blogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
-import {postsCommandRepository} from "../repositories/posts.command.repository";
+import {BlogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
+import {PostsCommandRepository} from "../repositories/posts.command.repository";
+import {inject, injectable} from "inversify";
 
 export type PostType = {
     title: string,
@@ -11,9 +12,12 @@ export type PostType = {
     createdAt: string
 }
 
-export const postsService = {
+@injectable()
+export class PostsService  {
+    constructor(@inject(PostsCommandRepository) private postsCommandRepository: PostsCommandRepository,
+                @inject(BlogsQueryRepository) private blogsQueryRepository: BlogsQueryRepository){}
     async createPost(body: InputPostType) {
-        const existBlog = await blogsQueryRepository.getById(body.blogId)
+        const existBlog = await this.blogsQueryRepository.getById(body.blogId)
         if (existBlog) {
             const newPost: PostType = {
                 title: body.title,
@@ -23,18 +27,18 @@ export const postsService = {
                 blogName: existBlog.name,
                 createdAt: (new Date().toISOString())
             }
-            return await postsCommandRepository.create(newPost)
+            return await this.postsCommandRepository.create(newPost)
         } else {
             return null
         }
-    },
+    }
     async deletePost(id: string) {
-        return await postsCommandRepository.delete(id)
-    },
+        return await this.postsCommandRepository.delete(id)
+    }
     async updatePost({params, body}: any) {
-        return await postsCommandRepository.update({params, body})
-    },
+        return await this.postsCommandRepository.update({params, body})
+    }
     async findPost(id: string): Promise<PostDBType | null> {
-        return await postsCommandRepository.find(id)
-    },
+        return await this.postsCommandRepository.find(id)
+    }
 }

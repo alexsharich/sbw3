@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {usersQueryRepository} from "../../users/repositories/users.query.repository";
 
@@ -15,4 +16,4 @@ export const meController = async (req: Request<any, any, any>, res: Response) =
         return
     }
     res.sendStatus(401)
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {postsService} from "../services/posts.service";
 
@@ -10,4 +11,4 @@ export const deletePostController = async (req: Request, res: Response) => {
         return
     }
     res.sendStatus(204)
-}
+}*/

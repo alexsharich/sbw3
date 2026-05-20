@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {paginationQueries, PaginationQueriesType} from "../../helpers/pagination.values";
 import {postsQueryRepository} from "../repositories/posts.query.repository";
@@ -10,4 +11,4 @@ export const getPostsController = async (req: Request<{}, {}, {}, PaginationQuer
         return
     }
     res.status(200).json(posts)
-}
+}*/

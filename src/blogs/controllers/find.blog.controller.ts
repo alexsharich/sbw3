@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {blogsQueryRepository} from "../repositories/blogs.query.repository";
 
@@ -9,4 +10,4 @@ export const findBlogController = async (req: Request, res: Response) => {
     }
     res.status(200).send(foundBlog)
 
-}
+}*/

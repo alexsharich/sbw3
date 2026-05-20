@@ -2,8 +2,10 @@ import {commentsCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
 import {CommentType} from "../../input-output-types/comments.type";
 import {mapToOutputComment} from "./comments.query.repository";
+import {injectable} from "inversify";
 
-export const commentsCommandRepository = {
+@injectable()
+export class CommentsCommandRepository  {
     async delete(id: string) {
         try {
             const commentId = new ObjectId(id)
@@ -13,7 +15,7 @@ export const commentsCommandRepository = {
         } catch (e) {
             return false
         }
-    },
+    }
     async update(commentId: string, content: string): Promise<any> {
         try {
             const id = new ObjectId(commentId)
@@ -27,7 +29,7 @@ export const commentsCommandRepository = {
         } catch (e) {
             return null
         }
-    },
+    }
     async find(id: string) {
         try {
             const commentId = new ObjectId(id)
@@ -37,7 +39,7 @@ export const commentsCommandRepository = {
         } catch (e) {
             return null
         }
-    },
+    }
     async createComment(newComment: CommentType): Promise<any> {
         try {
             const createdComment = await commentsCollection.insertOne(newComment)
@@ -47,5 +49,5 @@ export const commentsCommandRepository = {
             console.log('Create blog error : ', error)
             return null
         }
-    },
+    }
 }

@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {daysToMs} from "../../helpers/days.to.ms";
 import {jwtServise} from "../../application/jwtService";
@@ -27,4 +28,4 @@ export const refreshTokenController = async (req: Request, res: Response) => {
         secure: true
     })
     res.status(200).json({accessToken})
-}
+}*/

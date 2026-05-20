@@ -1,3 +1,4 @@
+/*
 import {Request,Response} from "express";
 import {usersService} from "../services/users.service";
 import {usersQueryRepository} from "../repositories/users.query.repository";
@@ -19,4 +20,4 @@ export const createUserController =async (req:Request,res:Response)=>{
     }
 
     res.sendStatus(404)
-}
+}*/

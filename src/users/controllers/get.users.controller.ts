@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {paginationQueriesForUsers, PaginationQueriesUsersType} from "../../helpers/pagination.values";
 import {usersQueryRepository} from "../repositories/users.query.repository";
@@ -9,4 +10,4 @@ export const getUsersController = async (req: Request<{}, {}, {}, PaginationQuer
     if (users) {
         res.status(200).send(users)
     }
-}
+}*/

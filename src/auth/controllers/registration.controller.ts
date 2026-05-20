@@ -1,3 +1,4 @@
+/*
 import {Request,Response} from "express";
 import {authService} from "../service/authService";
 
@@ -8,4 +9,4 @@ export const registrationController = async(req:Request,res:Response)=>{
     }else {
         res.status(400).send( { errorsMessages: [{ message: "Email error", field: "email" }] })
     }
-}
+}*/

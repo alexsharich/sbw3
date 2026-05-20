@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {blogsQueryRepository} from "../repositories/blogs.query.repository";
 import {blogsService} from "../services/blogs.service";
@@ -15,4 +16,4 @@ export const createBlogController = async (req: Request, res: Response) => {//ad
         }
     }
     res.sendStatus(404)
-}
+}*/

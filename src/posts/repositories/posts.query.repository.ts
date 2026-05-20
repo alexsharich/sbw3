@@ -4,8 +4,10 @@ import {blogsCollection, postsCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
 import {PostDBType} from "../../input-output-types/posts.type";
 import {mapToOutputPost} from "./posts.command.repository";
+import {injectable} from "inversify";
 
-export const postsQueryRepository = {
+@injectable()
+export class PostsQueryRepository {
     async getAll(query: PaginationQueriesType) {
         try {
             const pageNumber = query.pageNumber
@@ -40,7 +42,8 @@ export const postsQueryRepository = {
             console.log('Get posts for selected blog Error')
             return null
         }
-    },
+    }
+
     async getById(id: string): Promise<PostDBType | null> {
 
         try {
@@ -51,7 +54,8 @@ export const postsQueryRepository = {
         } catch (e) {
             return null
         }
-    },
+    }
+
     async getPostsForSelectedBlog({blogId, query}: { blogId: string, query: PaginationQueriesType }): Promise<any> {
 
         try {
@@ -83,5 +87,5 @@ export const postsQueryRepository = {
             console.log('Get posts for selected blog Error')
             return null
         }
-    },
+    }
 }

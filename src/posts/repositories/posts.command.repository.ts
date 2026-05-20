@@ -4,6 +4,7 @@ import {postsCollection} from "../../repositories/db/db";
 import {PostType} from "../services/posts.service";
 import {OutputPostType, PostDBType} from "../../input-output-types/posts.type";
 import {OutputBlogType} from "../../input-output-types/blogs.type";
+import {injectable} from "inversify";
 
 
 const posts: Array<Post> = []
@@ -26,8 +27,8 @@ export type MapToOutputWithPagination = {
     "totalCount": number,
     "items": Array<OutputPostType> | Array<OutputBlogType>
 }
-
-export const postsCommandRepository = {
+@injectable()
+export class PostsCommandRepository {
 
     async create(newPost: PostType) {
         try {
@@ -37,7 +38,8 @@ export const postsCommandRepository = {
             console.log('Create post repo  erro', e)
             return null
         }
-    },
+    }
+
     async delete(id: string) {
         try {
             const postId = new ObjectId(id)
@@ -47,14 +49,16 @@ export const postsCommandRepository = {
         } catch (e) {
             return false
         }
-    },
+    }
+
     async deleteAllPosts() {
         try {
             await postsCollection.deleteMany({})
         } catch (e) {
             throw new Error('Delete... Something wrong')
         }
-    },
+    }
+
     async update({params, body}: any) {
         try {
             const postId = new ObjectId(params)
@@ -71,7 +75,8 @@ export const postsCommandRepository = {
         } catch (e) {
             return null
         }
-    },
+    }
+
     async find(id: string): Promise<PostDBType | null> {
 
         try {
@@ -82,5 +87,5 @@ export const postsCommandRepository = {
         } catch (e) {
             return null
         }
-    },
+    }
 }

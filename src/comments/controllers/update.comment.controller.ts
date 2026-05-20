@@ -1,3 +1,4 @@
+/*
 import {commentsService} from "../services/commnets.service";
 import {Request,Response} from "express";
 import {InputCommentType} from "../../input-output-types/comments.type";
@@ -17,4 +18,4 @@ export const updateCommentController = async (req:Request<{commentId:string}, {}
         return
     }
     res.sendStatus(204)
-}
+}*/

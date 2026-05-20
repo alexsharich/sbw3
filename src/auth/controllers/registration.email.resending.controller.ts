@@ -1,3 +1,4 @@
+/*
 import {authService} from "../service/authService";
 import {Request, Response} from "express";
 
@@ -8,4 +9,4 @@ export const registrationEmailResendingController = async (req: Request, res: Re
         return
     }
     res.status(204).send()
-}
+}*/

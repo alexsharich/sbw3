@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {jwtServise} from "../../application/jwtService";
 import {authService} from "../service/authService";
@@ -41,4 +42,4 @@ export const loginController = async (req: Request<any, any, LoginInputType>, re
         secure: true
     })
     res.status(200).json({accessToken})
-}
+}*/

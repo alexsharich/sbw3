@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {paginationQueries, PaginationQueriesType} from "../../helpers/pagination.values";
 import {blogsQueryRepository} from "../repositories/blogs.query.repository";
@@ -25,4 +26,4 @@ export const getPostsForSelectedBlogController = async (req: Request<{
         return
     }
     res.status(200).send(posts)
-}
+}*/

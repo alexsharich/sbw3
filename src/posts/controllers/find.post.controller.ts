@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {postsQueryRepository} from "../repositories/posts.query.repository";
 
@@ -8,4 +9,4 @@ export const findPostController = async (req: Request, res: Response) => {
         return;
     }
     res.status(200).json(foundPost)
-}
+}*/

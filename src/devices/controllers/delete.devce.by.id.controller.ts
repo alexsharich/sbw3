@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {devicesService} from "../services/devices.service";
 
@@ -10,4 +11,4 @@ export const deleteDeviceByIdController = async (req: Request<{ deviceId: string
     }
     const result = await devicesService.deleteDeviceById(deviceId, userId)
     res.sendStatus(result)
-}
+}*/

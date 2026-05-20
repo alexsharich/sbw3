@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {blogsService} from "../services/blogs.service";
 import {postsService} from "../../posts/services/posts.service";
@@ -17,4 +18,4 @@ export const createPostForSelectedBlogController = async (req: Request<{
         return
     }
     res.status(201).json(newPost)
-}
+}*/

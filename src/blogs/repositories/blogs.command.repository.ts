@@ -1,14 +1,17 @@
 import {BlogDBType} from "../../input-output-types/blogs.type";
 import {blogsCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
+import {injectable} from "inversify";
 
-export const blogsCommandRepository = {
+@injectable()
+export class BlogsCommandRepository {
 
     async create(dto: BlogDBType) {
         const createdBlog = await blogsCollection.insertOne(dto)
         return createdBlog.insertedId.toString()
 
-    },
+    }
+
     async updateBlog({params, body}: any) {
         try {
             const blogId = new ObjectId(params)
@@ -27,7 +30,8 @@ export const blogsCommandRepository = {
         } catch (e) {
             return null
         }
-    },
+    }
+
     async deleteBlog(id: string) {
         try {
             const blogId = new ObjectId(id)
@@ -37,7 +41,8 @@ export const blogsCommandRepository = {
         } catch (e) {
             return false
         }
-    },
+    }
+
     async deleteAllBlogs() {
         try {
             await blogsCollection.deleteMany({})
@@ -45,5 +50,5 @@ export const blogsCommandRepository = {
             throw new Error('Delete...Something wrong')
         }
 
-    },
+    }
 }

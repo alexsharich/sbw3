@@ -1,25 +1,25 @@
-import {LoginInputType} from "../controllers/login.controller";
 import bcrypt from 'bcrypt'
-import {UsersQueryRepository, usersQueryRepository} from "../../users/repositories/users.query.repository";
+import {UsersQueryRepository} from "../../users/repositories/users.query.repository";
 import {ObjectId} from "mongodb";
 import {add} from "date-fns/add";
 import {v4 as uuidv4} from 'uuid'
-import {UsersCommandRepository, usersCommandRepository} from "../../users/repositories/users.command.repository";
+import {UsersCommandRepository} from "../../users/repositories/users.command.repository";
 import {emailManager} from "../../managers/emailManager";
 import {businessServis} from "../../domain/business.service";
 import {EmailAdapter} from "../../adapters/email.adapter";
 import {emailExamples} from "../../helpers/email.templates";
 import {inject, injectable} from "inversify";
+import {LoginInputType} from "../../input-output-types/auth.type";
 
 @injectable()
 export class AuthService  {
-    constructor(@inject(UsersCommandRepository) private usersRepository: UsersCommandRepository,
+    constructor(@inject(UsersCommandRepository) private usersCommandRepository: UsersCommandRepository,
     @inject(EmailAdapter) private emailAdapter: EmailAdapter,
     @inject(UsersQueryRepository) private usersQueryRepository: UsersQueryRepository){
 
     }
     async loginWithEmailOrLogin({loginOrEmail, password}: LoginInputType): Promise<string | null> {
-        const user = await usersQueryRepository.findUserWithEmailOrLogin(loginOrEmail)
+        const user = await this.usersQueryRepository.findUserWithEmailOrLogin(loginOrEmail)
         if (user) {
             const match = await bcrypt.compare(password, user.accountData.passwordHash)
             if (match) {
@@ -48,7 +48,7 @@ export class AuthService  {
                 isConfirmed: false
             }
         }
-        const createResult = await usersCommandRepository.createUser(user)
+        const createResult = await this.usersCommandRepository.createUser(user)
 
         try {
             await emailManager.sendEmailConfirmationMessage(user.accountData.email, user.emailConfirmation.confirmationCode)
@@ -59,29 +59,29 @@ export class AuthService  {
         return createResult
     }
     async confirmEmail(code: string) {
-        let user = await usersCommandRepository.findUserByConfirmationCode(code)
+        let user = await this.usersCommandRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.expirationDate < new Date()) return false
-        return await usersCommandRepository.updateConfirmation(user._id)
+        return await this.usersCommandRepository.updateConfirmation(user._id)
 
     }
     async resendingEmail(email: string) {
-        const user = await usersCommandRepository.findUserWithEmailOrLogin(email)
+        const user = await this.usersCommandRepository.findUserWithEmailOrLogin(email)
         if (!user || user.emailConfirmation.isConfirmed) {
             return null
         }
-        await usersCommandRepository.updateCode(user._id)
-        const updatedUser = await usersCommandRepository.findUserWithEmailOrLogin(email)
+        await this.usersCommandRepository.updateCode(user._id)
+        const updatedUser = await this.usersCommandRepository.findUserWithEmailOrLogin(email)
         await businessServis.sendEmail(updatedUser!.accountData.email, 'Resending email', ' Resending message', updatedUser?.emailConfirmation.confirmationCode)
         return true
     }
     async addTokenToBlackList(oldRefreshToken: string) {
-        return await usersCommandRepository.tokenToBlackList(oldRefreshToken)
+        return await this.usersCommandRepository.tokenToBlackList(oldRefreshToken)
     }
     async checkTokenInBlackList(refreshToken: string) {
-        return await usersCommandRepository.checkTokenInBlackList(refreshToken)
+        return await this.usersCommandRepository.checkTokenInBlackList(refreshToken)
     }
     async recoveryCode(userId: ObjectId, email: string) {
         const codeRecovrey = uuidv4()
@@ -90,12 +90,12 @@ export class AuthService  {
     }
     async  newPassword(newPassword: string, recoveryCode: string) {
 
-        const user = await usersQueryRepository.findUserByRecoveryCode(recoveryCode)
+        const user = await this.usersQueryRepository.findUserByRecoveryCode(recoveryCode)
         if (!user) {
             return false
         }
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(newPassword, salt)
-        return await usersCommandRepository.newPassword(user._id, passwordHash)
+        return await this.usersCommandRepository.newPassword(user._id, passwordHash)
     }
 }

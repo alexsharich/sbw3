@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {commentsService} from "../services/commnets.service";
 
@@ -13,4 +14,4 @@ export const deleteCommentController = async (req: Request<{ commentId: string }
         return
     }
     res.sendStatus(204)
-}
+}*/

@@ -1,17 +1,11 @@
 import {Router} from "express";
 import {findPostValidator, postsValidator} from "../../posts/validators/postsValidator";
 import {adminMiddleware} from "../../global-middleware/admin.middleware";
-import {getPostsController} from "../../posts/controllers/get.posts.controller";
-import {createPostController} from "../../posts/controllers/create.post.controller";
-import {updatePostController} from "../../posts/controllers/update.post.controller";
-import {deletePostController} from "../../posts/controllers/delete.post.controller";
-import {findPostController} from "../../posts/controllers/find.post.controller";
-import {getCommentsForPostController} from "../../posts/controllers/get.comments.for.post.controller";
 import {authMiddleware} from "../../global-middleware/auth.middleware";
-import {createCommentForPostContrloller} from "../../posts/controllers/create.comment.for.post";
-import {commentContentValidator} from "../../comments/validators/comment.validators";
 
-export const postsRouter = Router({})
+import {commentContentValidator} from "../../comments/validators/comment.validators";
+import {PostsController} from "../../posts/controllers/posts.controller";
+import {container} from "../../composition-root";
 
 export type PostDto = {
     title: string,
@@ -28,11 +22,14 @@ export type Post = {
     blogName: string | undefined
 }
 
-postsRouter.get('/:id/comments', getCommentsForPostController)
-postsRouter.post('/:id/comments', authMiddleware, ...commentContentValidator, createCommentForPostContrloller)//create comment for blog
+const postsController = container.get(PostsController)
+export const postsRouter = Router()
 
-postsRouter.get('/', getPostsController)
-postsRouter.post('/', ...postsValidator, createPostController)
-postsRouter.get('/:id', findPostValidator, findPostController)
-postsRouter.put('/:id', adminMiddleware, ...postsValidator, updatePostController)
-postsRouter.delete('/:id', adminMiddleware, findPostValidator, deletePostController)
+postsRouter.get('/:id/comments', postsController.getCommentsForPost.bind(postsController))
+postsRouter.post('/:id/comments', authMiddleware, ...commentContentValidator, postsController.createCommentForPost.bind(postsController))
+
+postsRouter.get('/', postsController.getPosts.bind(postsController))
+postsRouter.post('/', ...postsValidator, postsController.createPost.bind(postsController))
+postsRouter.get('/:id', findPostValidator, postsController.findPost.bind(postsController))
+postsRouter.put('/:id', adminMiddleware, ...postsValidator, postsController.updatePost.bind(postsController))
+postsRouter.delete('/:id', adminMiddleware, findPostValidator, postsController.deletePost.bind(postsController))

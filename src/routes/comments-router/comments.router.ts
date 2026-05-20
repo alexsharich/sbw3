@@ -1,12 +1,12 @@
 import {Router} from "express";
-import {getCommentController} from "../../comments/controllers/get.comment.controller";
-import {deleteCommentController} from "../../comments/controllers/delete.comment.cotroller";
 import {authMiddleware} from "../../global-middleware/auth.middleware";
 import {commentContentValidator} from "../../comments/validators/comment.validators";
-import {updateCommentController} from "../../comments/controllers/update.comment.controller";
+import {CommentsController} from "../../comments/controllers/comments.controller";
+import {container} from "../../composition-root";
 
-export const commentsRouter = Router({})
+const commentsController = container.get(CommentsController)
+export const commentsRouter = Router()
 
-commentsRouter.put('/:commentId', authMiddleware, ...commentContentValidator, updateCommentController)
-commentsRouter.delete('/:commnetId', authMiddleware, deleteCommentController)
-commentsRouter.get('/:id', getCommentController)
+commentsRouter.put('/:commentId', authMiddleware, ...commentContentValidator, commentsController.updateComment.bind(commentsController))
+commentsRouter.delete('/:commnetId', authMiddleware, commentsController.deleteComment.bind(commentsController))
+commentsRouter.get('/:id', commentsController.getComment.bind(commentsController))

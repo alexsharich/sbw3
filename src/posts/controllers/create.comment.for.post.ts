@@ -1,3 +1,4 @@
+/*
 import {Request} from "express";
 import {usersQueryRepository} from "../../users/repositories/users.query.repository";
 import {commentsService} from "../../comments/services/commnets.service";
@@ -28,4 +29,4 @@ export const createCommentForPostContrloller = async (req: Request<{
             }
         }
     }
-}
+}*/

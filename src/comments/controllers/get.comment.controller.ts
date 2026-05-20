@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {commentsQueryRepository} from "../repositories/comments.query.repository";
 
@@ -8,4 +9,4 @@ export const getCommentController = async (req: Request<{ id: string }>, res: Re
         return
     }
     res.status(200).send(comment)
-}
+}*/

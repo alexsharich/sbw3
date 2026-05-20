@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {postsService} from "../services/posts.service";
 import {postsQueryRepository} from "../repositories/posts.query.repository";
@@ -18,3 +19,4 @@ export const createPostController = async (req: Request, res: Response) => {
     }
     res.status(201).json(newPost)
 }
+*/

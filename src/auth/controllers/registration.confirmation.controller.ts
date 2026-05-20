@@ -1,3 +1,4 @@
+/*
 import {Request, Response} from "express";
 import {authService} from "../service/authService";
 
@@ -16,4 +17,4 @@ export const registrationConfirmationController = async (req: Request, res: Resp
     } else {
         res.status(204).send()
     }
-}
+}*/

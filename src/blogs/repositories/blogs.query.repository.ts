@@ -1,6 +1,7 @@
 import {blogsCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
 import {BlogDBType, OutputBlogType} from "../../input-output-types/blogs.type";
+import {injectable} from "inversify";
 
 type Blog = {
 
@@ -23,8 +24,8 @@ export const mapToOutputBlog = (blog: WithId<BlogDBType>): OutputBlogType => {
 export type SortMongoType = {
     [key: string]: 1 | -1
 }
-
-export const blogsQueryRepository = {
+@injectable()
+export class BlogsQueryRepository  {
     async getAll(query: any) {
         try {
             const pageNumber = query.pageNumber
@@ -57,7 +58,7 @@ export const blogsQueryRepository = {
             throw new Error('Blogs not found')
         }
 
-    },
+    }
 
     async getById(id: string) {
         try {
@@ -69,5 +70,5 @@ export const blogsQueryRepository = {
             console.log('Blog repository, find blog / find blog ', e)
             return null
         }
-    },
+    }
 }
