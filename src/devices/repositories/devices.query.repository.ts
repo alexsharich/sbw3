@@ -1,13 +1,14 @@
-import {devicesCollection} from "../../repositories/db/db";
-import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
+import {DeviceModel} from "../../input-output-types/device.type";
 
 
 @injectable()
-export class DevicesQueryRepository  {
-    constructor(){}
+export class DevicesQueryRepository {
+    constructor() {
+    }
+
     async getDevices(userId: string) {
-        const result = await devicesCollection.find({userId}).toArray()
+        const result = await DeviceModel.find({userId}).lean().exec()
         return result.map((res) => ({
             ip: res.ip,
             title: res.deviceName,
@@ -15,7 +16,8 @@ export class DevicesQueryRepository  {
             deviceId: res._id.toString()
         }))
     }
+
     async getDeviceById(deviceId: string) {
-        return devicesCollection.findOne({_id: new ObjectId(deviceId)})
+        return DeviceModel.findById(deviceId)
     }
 }

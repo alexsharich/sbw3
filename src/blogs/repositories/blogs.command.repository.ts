@@ -1,5 +1,4 @@
-import {BlogDBType} from "../../input-output-types/blogs.type";
-import {blogsCollection} from "../../repositories/db/db";
+import {BlogDBType, BlogModel} from "../../input-output-types/blogs.type";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
 
@@ -7,25 +6,27 @@ import {injectable} from "inversify";
 export class BlogsCommandRepository {
 
     async create(dto: BlogDBType) {
-        const createdBlog = await blogsCollection.insertOne(dto)
-        return createdBlog.insertedId.toString()
-
+        try {
+            const createdBlog = await BlogModel.insertOne(dto)
+            await createdBlog.save()
+            return createdBlog._id.toHexString()
+        } catch (e) {
+            return null
+        }
     }
 
     async updateBlog({params, body}: any) {
         try {
             const blogId = new ObjectId(params)
-
-            const result = await blogsCollection.updateOne({_id: blogId}, {
-                $set: {
-                    name: body.name,
-                    description: body.description,
-                    websiteUrl: body.websiteUrl
-                }
-            })
-
-            if (result.matchedCount === 1) return true
-            return null
+            const blog = await BlogModel.findById(blogId)
+            if (!blog) {
+                return null
+            }
+            blog.name = body.name
+            blog.description = body.description
+            blog.websiteUrl = body.websiteUrl
+            await blog.save()
+            return true
 
         } catch (e) {
             return null
@@ -35,7 +36,7 @@ export class BlogsCommandRepository {
     async deleteBlog(id: string) {
         try {
             const blogId = new ObjectId(id)
-            const result = await blogsCollection.deleteOne({_id: blogId})
+            const result = await BlogModel.deleteOne(blogId)
             if (result.deletedCount === 1) return true
             return false
         } catch (e) {
@@ -45,7 +46,7 @@ export class BlogsCommandRepository {
 
     async deleteAllBlogs() {
         try {
-            await blogsCollection.deleteMany({})
+            await BlogModel.deleteMany({})
         } catch (e) {
             throw new Error('Delete...Something wrong')
         }

@@ -1,30 +1,38 @@
-import {devicesCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
-import {Device} from "../../input-output-types/device.type";
+import {Device, DeviceModel} from "../../input-output-types/device.type";
 import {injectable} from "inversify";
 
 @injectable()
-export class DevicesCommandRepository  {
+export class DevicesCommandRepository {
     async createDevice(_id: ObjectId, device: Device) {
-        const deviceId = await devicesCollection.insertOne({_id, ...device})
-        console.log('_ID :', String(_id), deviceId)
-        return deviceId.insertedId.toHexString()
+        const newDevice = await DeviceModel.insertOne({_id, ...device})
+        await newDevice.save()
+        return newDevice._id.toString()
     }
+
     async deleteDevice(deviceId: string) {
         const objDeviceId = new ObjectId(deviceId)
-        const result = await devicesCollection.deleteOne({_id: objDeviceId})
+        const result = await DeviceModel.deleteOne(objDeviceId)
         return result.deletedCount === 1
     }
+
     async deleteDevices(userId: string, deviceId: string) {
-        const result = await devicesCollection.deleteMany({userId, _id: {$ne: new ObjectId(deviceId)}})
+        const result = await DeviceModel.deleteMany({userId, _id: {$ne: new ObjectId(deviceId)}})
         return result.deletedCount >= 1
     }
+
     async updateDevice(deviceId: ObjectId, expAt: string, createdAt: string) {
-        const result = await devicesCollection.updateOne({_id: deviceId}, {
-            $set: {
-                expAt, createdAt
-            }
-        })
-        return result.matchedCount === 1
+        const device = await DeviceModel.findById(deviceId).exec()
+        if (!device) {
+            return false
+        }
+        device.expAt = expAt
+        device.createdAt = createdAt
+        await device.save()
+        return true
+    }
+
+    async getDeviceById(deviceId: string) {
+        return await DeviceModel.findById(deviceId)
     }
 }

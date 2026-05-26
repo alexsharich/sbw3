@@ -1,6 +1,6 @@
 import {blackListCollection, usersCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
-import {UserAccountDBType} from "../../input-output-types/users.type";
+import {UserAccountDBType, UserModel} from "../../input-output-types/users.type";
 import {add} from "date-fns/add";
 import {v4 as uuidv4} from 'uuid'
 import {injectable} from "inversify";
@@ -8,14 +8,15 @@ import {injectable} from "inversify";
 @injectable()
 export class UsersCommandRepository {
     async findUserWithEmailOrLogin(emailOrLogin: string) {
-        return await usersCollection.findOne({$or: [{login: emailOrLogin}, {email: emailOrLogin}]})
+        return UserModel.findOne({$or: [{'accountData.userName': emailOrLogin}, {'accountData.email': emailOrLogin}]})
     }
 
 
     async createUser(user: UserAccountDBType): Promise<string | null> {
         try {
-            const createdUser = await usersCollection.insertOne(user)
-            return createdUser.insertedId.toString()
+            const createdUser = new UserModel(user)
+            await createdUser.save()
+            return createdUser._id.toString()
         } catch (e) {
             console.log('Create user error : ', e)
             return null
@@ -25,7 +26,7 @@ export class UsersCommandRepository {
     async deleteUser(id: string) {
         try {
             const userId = new ObjectId(id)
-            const result = await usersCollection.deleteOne({_id: userId})
+            const result = await UserModel.deleteOne({_id: userId})
             if (result.deletedCount === 1) return true
             return false
         } catch (e) {
@@ -38,27 +39,27 @@ export class UsersCommandRepository {
     }
 
     async checkUniqUserWithEmailOrLogin(login: string, email: string) {
-        return await usersCollection.findOne({$or: [{login: login}, {email: email}]})
+        return UserModel.findOne({$or: [{'accountData.userName': login}, {'accountData.email': email}]})
     }
 
     async findUserByConfirmationCode(emailConfirmationCode: string) {
-        return await usersCollection.findOne({'emailConfirmation.confirmationCode': emailConfirmationCode})
-
+        return await UserModel.findOne({'emailConfirmation.confirmationCode': emailConfirmationCode})
     }
 
     async updateConfirmation(userId: any) {
-        const result = await usersCollection.updateOne({_id: userId}, {$set: {'emailConfirmation.isConfirmed': true}})
+        const result = await UserModel.updateOne({_id: userId}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1
     }
 
     async updateCode(userId: ObjectId) {
         const newExpirationDate = add(new Date(), {hours: 1})
-        await usersCollection.updateOne({_id: userId}, {
-            $set: {
-                'emailConfirmation.expirationDate': newExpirationDate,
-                'emailConfirmation.confirmationCode': uuidv4(),
-            }
-        })
+        const user = await UserModel.findById(userId).exec()
+        if (!user) {
+            throw new Error('not found')
+        }
+        user.emailConfirmation.expirationDate = newExpirationDate
+        user.emailConfirmation.confirmationCode = uuidv4()
+        await user.save()
     }
 
     async tokenToBlackList(oldRefreshToken: string) {
@@ -74,14 +75,22 @@ export class UsersCommandRepository {
     }
 
     async addRecoveryCode(userId: ObjectId, code: string) {
-        const result = await usersCollection.updateOne({_id: userId}, {$set: {passwordRecovery: code}})
-        const user = await usersCollection.findOne({_id: userId})
-        console.log("USER : ", user)
-        return result.modifiedCount === 1
+        const user = await UserModel.findOne(userId)
+        if (!user) {
+            return false
+        }
+        user.passwordRecovery = code
+        await user.save()
+        return true
     }
 
     async newPassword(id: ObjectId, newPassword: string) {
-        const result = await usersCollection.updateOne({_id: id}, {$set: {'accountData.passwordHash': newPassword}})
-        return result.modifiedCount === 1
+        const user = await UserModel.findById(id).exec()
+        if (!user) {
+            return false
+        }
+        user.accountData.passwordHash = newPassword
+        await user.save()
+        return true
     }
 }

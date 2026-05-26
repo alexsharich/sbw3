@@ -1,6 +1,6 @@
 import {commentsCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
-import {CommentType} from "../../input-output-types/comments.type";
+import {CommentDocument, CommentModel, CommentType} from "../../input-output-types/comments.type";
 import {mapToOutputComment} from "./comments.query.repository";
 import {injectable} from "inversify";
 
@@ -9,7 +9,7 @@ export class CommentsCommandRepository  {
     async delete(id: string) {
         try {
             const commentId = new ObjectId(id)
-            const result = await commentsCollection.deleteOne({_id: commentId})
+            const result = await CommentModel.deleteOne({_id: commentId})
             if (result.deletedCount === 1) return true
             return false
         } catch (e) {
@@ -18,14 +18,13 @@ export class CommentsCommandRepository  {
     }
     async update(commentId: string, content: string): Promise<any> {
         try {
-            const id = new ObjectId(commentId)
-            const result = await commentsCollection.updateOne({_id: id}, {
-                $set: {
-                    content: content,
-                }
-            })
-            if (result.matchedCount === 1) return await commentsCollection.findOne({_id: id})
-            return null
+            const comment = await CommentModel.findById(commentId).exec()
+            if (!comment) {
+                return null
+            }
+            comment.content = content
+            await comment.save()
+            await CommentModel.findById(comment._id)
         } catch (e) {
             return null
         }
@@ -33,12 +32,16 @@ export class CommentsCommandRepository  {
     async find(id: string) {
         try {
             const commentId = new ObjectId(id)
-            const comment = await commentsCollection.findOne({_id: commentId})
+            const comment = await CommentModel.findOne({_id: commentId})
             if (comment) return mapToOutputComment(comment)
             return null
         } catch (e) {
             return null
         }
+    }
+    async save(comment: CommentDocument) {
+        await comment.save()
+        return comment._id.toString()
     }
     async createComment(newComment: CommentType): Promise<any> {
         try {

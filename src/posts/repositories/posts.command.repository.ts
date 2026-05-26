@@ -1,8 +1,7 @@
 import {Post} from "../../routes/posts-router/posts.router";
 import {ObjectId, WithId} from "mongodb";
-import {postsCollection} from "../../repositories/db/db";
 import {PostType} from "../services/posts.service";
-import {OutputPostType, PostDBType} from "../../input-output-types/posts.type";
+import {OutputPostType, PostDBType, PostModel} from "../../input-output-types/posts.type";
 import {OutputBlogType} from "../../input-output-types/blogs.type";
 import {injectable} from "inversify";
 
@@ -27,23 +26,21 @@ export type MapToOutputWithPagination = {
     "totalCount": number,
     "items": Array<OutputPostType> | Array<OutputBlogType>
 }
+
 @injectable()
 export class PostsCommandRepository {
 
     async create(newPost: PostType) {
-        try {
-            const createdPost = await postsCollection.insertOne(newPost)
-            return createdPost.insertedId.toHexString()
-        } catch (e) {
-            console.log('Create post repo  erro', e)
-            return null
-        }
+
+        const createdPost = await PostModel.insertOne(newPost)
+        return createdPost.save()
+        return createdPost._id.toString()
     }
 
     async delete(id: string) {
         try {
             const postId = new ObjectId(id)
-            const result = await postsCollection.deleteOne({_id: postId})
+            const result = await PostModel.deleteOne(postId)
             if (result.deletedCount === 1) return true
             return false
         } catch (e) {
@@ -53,35 +50,31 @@ export class PostsCommandRepository {
 
     async deleteAllPosts() {
         try {
-            await postsCollection.deleteMany({})
+            await PostModel.deleteMany({})
         } catch (e) {
             throw new Error('Delete... Something wrong')
         }
     }
 
     async update({params, body}: any) {
-        try {
-            const postId = new ObjectId(params)
-            const result = await postsCollection.updateOne({_id: postId}, {
-                $set: {
-                    title: body.title,
-                    content: body.content,
-                    shortDescription: body.shortDescription,
-                    blogId: body.blogId
-                }
-            })
-            if (result.matchedCount === 1) return await postsCollection.findOne({_id: postId})
-            return null
-        } catch (e) {
-            return null
+        const postId = new ObjectId(params)
+        const post = await PostModel.findById(postId).exec()
+        if (!post) {
+            return false
         }
+        post.title = body.title
+        post.content = body.content
+        post.shortDescription = body.shortDescription
+        post.blogId = body.blogId
+        await post.save()
+
+        return await PostModel.findById(postId).exec()
     }
 
     async find(id: string): Promise<PostDBType | null> {
-
         try {
             const postId = new ObjectId(id)
-            const post = await postsCollection.findOne({_id: postId})
+            const post = await PostModel.findOne(postId)
             if (post) return mapToOutputPost(post)
             return null
         } catch (e) {

@@ -2,7 +2,7 @@ import {commentsCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
 import {PaginationQueriesCommentType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
-import {CommentDBType} from "../../input-output-types/comments.type";
+import {CommentDBType, CommentModel} from "../../input-output-types/comments.type";
 import {injectable} from "inversify";
 
 export const mapToOutputComment = (comment: WithId<CommentDBType>): any => {
@@ -22,7 +22,7 @@ export class CommentsQueryRepository  {
     async find(id: string) {
         try {
             const commentId = new ObjectId(id)
-            const comment = await commentsCollection.findOne({_id: commentId})
+            const comment = await CommentModel.findById(commentId)
             if (comment) return mapToOutputComment(comment)
             return null
         } catch (e) {

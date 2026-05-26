@@ -1,10 +1,10 @@
 import {PaginationQueriesType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
-import {blogsCollection, postsCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
-import {PostDBType} from "../../input-output-types/posts.type";
+import {PostDBType, PostModel} from "../../input-output-types/posts.type";
 import {mapToOutputPost} from "./posts.command.repository";
 import {injectable} from "inversify";
+import {BlogModel} from "../../input-output-types/blogs.type";
 
 
 @injectable()
@@ -21,14 +21,13 @@ export class PostsQueryRepository {
                 filter = {$regex: searchNameTerm, $option: 'i'}
             }
             const sortFilter: SortMongoType = {[sortBy]: sortDirection} as SortMongoType
-            const posts = await postsCollection
+            const posts = await PostModel
                 .find(filter)
                 .sort(sortFilter)
                 .skip((pageNumber - 1) * pageSize)
                 .limit(+pageSize)
-                .toArray()
 
-            const totalCount = await blogsCollection.countDocuments(filter)
+            const totalCount = await BlogModel.countDocuments(filter)
 
 
             return {
@@ -49,7 +48,7 @@ export class PostsQueryRepository {
 
         try {
             const postId = new ObjectId(id)
-            const post = await postsCollection.findOne({_id: postId})
+            const post = await PostModel.findOne( postId)
             if (post) return mapToOutputPost(post)
             return null
         } catch (e) {
@@ -68,13 +67,12 @@ export class PostsQueryRepository {
             let filter = {blogId: blogId}
 
             const sortFilter: SortMongoType = {[sortBy]: sortDirection} as SortMongoType
-            const posts = await postsCollection
+            const posts = await PostModel
                 .find(filter).sort(sortFilter)
                 .skip((pageNumber - 1) * pageSize)
                 .limit(pageSize)
-                .toArray()
 
-            const totalCount = await postsCollection.countDocuments(filter)
+            const totalCount = await PostModel.countDocuments(filter)
 
             return {
                 pagesCount: Math.ceil(totalCount / query.pageSize),

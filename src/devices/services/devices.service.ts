@@ -17,7 +17,8 @@ export class DevicesService {
     }
 
     async saveDevice(_id: ObjectId, ip: string, deviceName: string, createdAt: string, userId: string, expAt: string) {
-        const device = new Device(ip, deviceName, createdAt, userId, expAt)
+
+        const device: Device = {ip: ip, deviceName: deviceName, createdAt: createdAt, userId: userId, expAt: expAt}
         await this.devicesCommandRepository.createDevice(_id, device)
         return
     }

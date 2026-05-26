@@ -1,6 +1,9 @@
 import {HydratedDocument, model, Model, Schema} from "mongoose";
 
 
+export type InputCommentType = {
+    content: string
+}
 
 export type CommentDBType = {
     postId: string,
@@ -34,5 +37,5 @@ const CommentSchema = new Schema<CommentDBType>({
             dislikeCount: {type: Number, required: true, default: 0},
         }
     },
-    {timestamps:true})
+    {timestamps: true})
 export const CommentModel = model<CommentDBType, CommentModelType>('comment', CommentSchema)

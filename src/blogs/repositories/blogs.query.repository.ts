@@ -1,10 +1,8 @@
-import {blogsCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
-import {BlogDBType, OutputBlogType} from "../../input-output-types/blogs.type";
+import {BlogDBType, BlogDocument, BlogModel, OutputBlogType} from "../../input-output-types/blogs.type";
 import {injectable} from "inversify";
 
 type Blog = {
-
     name: string,
     description: string,
     websiteUrl: string
@@ -24,8 +22,9 @@ export const mapToOutputBlog = (blog: WithId<BlogDBType>): OutputBlogType => {
 export type SortMongoType = {
     [key: string]: 1 | -1
 }
+
 @injectable()
-export class BlogsQueryRepository  {
+export class BlogsQueryRepository {
     async getAll(query: any) {
         try {
             const pageNumber = query.pageNumber
@@ -40,18 +39,17 @@ export class BlogsQueryRepository  {
 
             const sortFilter: SortMongoType = {[sortBy]: sortDirection} as SortMongoType
 
-            const blogs = await blogsCollection.find(filter)
+            const blogs = await BlogModel.find(filter)
                 .sort(sortFilter)
                 .skip((pageNumber - 1) * pageSize)
                 .limit(pageSize)
-                .toArray()
-            const totalCount = await blogsCollection.countDocuments(filter)
+            const totalCount = await BlogModel.countDocuments(filter)
             return {
                 pagesCount: Math.ceil(totalCount / query.pageSize),
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount: totalCount,
-                items: blogs.map((blog: WithId<BlogDBType>) => mapToOutputBlog(blog))
+                items: blogs.map((blog: BlogDocument) => mapToOutputBlog(blog))
             }
         } catch (e) {
             console.log('blogs query repo / get blogs : ', e)
@@ -63,7 +61,7 @@ export class BlogsQueryRepository  {
     async getById(id: string) {
         try {
             const blogId = new ObjectId(id)
-            const blog = await blogsCollection.findOne({_id: blogId})
+            const blog = await BlogModel.findOne(blogId)
             if (blog) return mapToOutputBlog(blog)
             return null
         } catch (e) {

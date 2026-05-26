@@ -1,6 +1,5 @@
-import {usersCollection} from "../../repositories/db/db";
 import {ObjectId, WithId} from "mongodb";
-import {OutputUserType, UserAccountDBType} from "../../input-output-types/users.type";
+import {OutputUserType, UserAccountDBType, UserDocument, UserModel} from "../../input-output-types/users.type";
 import {PaginationQueriesUsersType} from "../../helpers/pagination.values";
 import {SortMongoType} from "../../blogs/repositories/blogs.query.repository";
 import {injectable} from "inversify";
@@ -19,16 +18,16 @@ interface UserFilter {
 }
 @injectable()
 export class UsersQueryRepository  {
-    async findUserWithEmailOrLogin(emailOrLogin: string) {
-        return await usersCollection.findOne({$or: [{login: emailOrLogin}, {email: emailOrLogin}]})
+    async findUserWithEmailOrLogin(loginOrEmail: string) {
+        return await UserModel.findOne({$or: [{'accountData.userName': loginOrEmail}, {'accountData.email': loginOrEmail}]})
     }
     async checkUniqUserWithEmailOrLogin(login: string, email: string) {
-        return await usersCollection.findOne({$or: [{'accountData.userName': login}, {'accountData.email': email}]})
+        return await UserModel.findOne({$or: [{'accountData.userName': login}, {'accountData.email': email}]})
     }
     async findUser(id: string): Promise<OutputUserType | null> {
         try {
             const userId = new ObjectId(id)
-            const user = await usersCollection.findOne({_id: userId})
+            const user = await UserModel.findOne({_id: userId})
             if (user) return mapToOutputUser(user)
             return null
         } catch (e) {
@@ -62,18 +61,17 @@ export class UsersQueryRepository  {
 
             const sortFilter: SortMongoType = {[sortBy]: sortDirection} as SortMongoType
 
-            const users = await usersCollection.find(filter)
+            const users = await UserModel.find(filter)
                 .sort(sortFilter)
                 .skip((pageNumber - 1) * pageSize)
                 .limit(pageSize)
-                .toArray()
-            const totalCount = await usersCollection.countDocuments(filter)
+            const totalCount = await UserModel.countDocuments(filter)
             return {
                 pagesCount: Math.ceil(totalCount / query.pageSize),
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount: totalCount,
-                items: users.map((user: WithId<UserAccountDBType>) => mapToOutputUser(user))
+                items: users.map((user: UserDocument) => mapToOutputUser(user))
             }
         } catch (e) {
             throw new Error('Users not found')
@@ -81,6 +79,6 @@ export class UsersQueryRepository  {
     }
 
     async findUserByRecoveryCode(passwordRecovery: string) {
-        return await usersCollection.findOne({passwordRecovery})
+        return await UserModel.findOne({passwordRecovery})
     }
 }

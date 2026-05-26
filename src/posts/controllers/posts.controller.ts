@@ -1,5 +1,4 @@
 import {Request, Response} from "express";
-import {InputCommentType} from "../../input-output-types/comments.type";
 import {PostsQueryRepository} from "../repositories/posts.query.repository";
 import {UsersQueryRepository} from "../../users/repositories/users.query.repository";
 import {CommentsService} from "../../comments/services/commnets.service";
@@ -20,6 +19,7 @@ import {
     postsCollection,
     usersCollection
 } from "../../repositories/db/db";
+import {InputCommentType} from "../../input-output-types/comments.type";
 
 @injectable()
 export class PostsController {
@@ -119,15 +119,16 @@ export class PostsController {
         }
         res.status(200).json(posts)
     }
-    async updatePost (req: Request<{ id: string }, any, InputPostType>, res: Response)  {
 
-    const isPostUpdated = await this.postsService.updatePost({params: req.params.id, body: req.body})
-    if (isPostUpdated) {
-        res.status(204).send(isPostUpdated)
-        return
+    async updatePost(req: Request<{ id: string }, any, InputPostType>, res: Response) {
+
+        const isPostUpdated = await this.postsService.updatePost({params: req.params.id, body: req.body})
+        if (isPostUpdated) {
+            res.status(204).send(isPostUpdated)
+            return
+        }
+        res.sendStatus(404)
     }
-    res.sendStatus(404)
-}
 
     async clearData(req: Request, res: Response) {
         await postsCollection.deleteMany({})
