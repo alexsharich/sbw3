@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import {Container} from "inversify";
 import {AuthController} from "./auth/controllers/auth.controller";
 import {UsersQueryRepository} from "./users/repositories/users.query.repository";

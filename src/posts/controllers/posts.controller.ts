@@ -12,7 +12,7 @@ import {
 } from "../../helpers/pagination.values";
 import {CommentsQueryRepository} from "../../comments/repositories/comments.query.repository";
 import {InputPostType} from "../../input-output-types/posts.type";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 import {
     blogsCollection,
     commentsCollection,

@@ -6,6 +6,7 @@ import {PostDBType} from "../../input-output-types/posts.type";
 import {mapToOutputPost} from "./posts.command.repository";
 import {injectable} from "inversify";
 
+
 @injectable()
 export class PostsQueryRepository {
     async getAll(query: PaginationQueriesType) {
