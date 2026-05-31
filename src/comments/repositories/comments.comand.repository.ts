@@ -1,11 +1,12 @@
 import {commentsCollection} from "../../repositories/db/db";
 import {ObjectId} from "mongodb";
-import {CommentDocument, CommentModel, CommentType} from "../../input-output-types/comments.type";
+import {CommentDocument, CommentModel, LikeStatus} from "../../input-output-types/comments.type";
 import {mapToOutputComment} from "./comments.query.repository";
 import {injectable} from "inversify";
+import {LikeModel} from "../../input-output-types/like.comment.type";
 
 @injectable()
-export class CommentsCommandRepository  {
+export class CommentsCommandRepository {
     async delete(id: string) {
         try {
             const commentId = new ObjectId(id)
@@ -16,6 +17,7 @@ export class CommentsCommandRepository  {
             return false
         }
     }
+
     async update(commentId: string, content: string): Promise<any> {
         try {
             const comment = await CommentModel.findById(commentId).exec()
@@ -29,6 +31,7 @@ export class CommentsCommandRepository  {
             return null
         }
     }
+
     async find(id: string) {
         try {
             const commentId = new ObjectId(id)
@@ -39,11 +42,68 @@ export class CommentsCommandRepository  {
             return null
         }
     }
+
     async save(comment: CommentDocument) {
         await comment.save()
         return comment._id.toString()
     }
-    async createComment(newComment: CommentType): Promise<any> {
+
+    async updateLikeStatus(status: LikeStatus, commentId: string, userId: string) {
+        const comment = await CommentModel.findById(commentId).exec()
+        if (!comment) {
+            return false
+        }
+
+        const like = await LikeModel.findOne({commentId, userId}).exec()
+        const userLikeStatus = comment.likeInfo
+        console.log("likeeeeeeeeeeeeeee: ", like, status)
+        console.log('USERID ::::: ', userId)
+        if (!like) {
+            if (status === 'None') {
+                return
+            }
+            const newLike = new LikeModel({commentId, userId, myStatus: status})
+            if (status === 'Like') {
+                userLikeStatus.likeCount++
+            }
+            if (status === 'Dislike') {
+                userLikeStatus.dislikeCount++
+            }
+            await newLike.save()
+            await comment.save()
+            return true
+        }
+
+        if (status === "Like") {
+            if (like?.myStatus === "Dislike") {
+                userLikeStatus.dislikeCount--
+                userLikeStatus.likeCount++
+            }
+        }
+        if (status === "Dislike") {
+
+            if (like?.myStatus === "Like") {
+                userLikeStatus.likeCount--
+                userLikeStatus.dislikeCount++
+            }
+        }
+        if (status === "None") {
+            if (like?.myStatus === "Like") {
+                userLikeStatus.likeCount--
+            }
+            if (like?.myStatus === "Dislike") {
+                userLikeStatus.dislikeCount--
+            }
+        }
+
+
+        like.myStatus = status
+        await like.save()
+        await comment.save()
+        return true
+    }
+
+    async createComment(newComment: CommentDocument): Promise<any> {
         try {
             const createdComment = await commentsCollection.insertOne(newComment)
             console.log('CREATED COMMENT : ', createdComment)

@@ -1,9 +1,16 @@
 import {body, param} from "express-validator";
 import {inputCheckErrorsMiddleware} from "../../global-middleware/inputCheckErrorMiddleware";
-import {blogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
 import {NextFunction, Request, Response} from "express";
 import {adminMiddleware} from "../../global-middleware/admin.middleware";
-import {postsQueryRepository} from "../repositories/posts.query.repository";
+import {container} from "../../composition-root";
+import {BlogsQueryRepository} from "../../blogs/repositories/blogs.query.repository";
+import {PostsQueryRepository} from "../repositories/posts.query.repository";
+import {LikeStatus} from "../../input-output-types/comments.type";
+
+const blogsQueryRepository = container.get(BlogsQueryRepository)
+const postsQueryRepository = container.get(PostsQueryRepository)
+
+const validStatuses: LikeStatus[] = ['None', 'Like', 'Dislike'] as const;
 
 export const titleValidator = body('title').isString().withMessage('not string').isLength({
     min: 1,
@@ -40,6 +47,12 @@ export const blogIdInParamsValidator = param('id').isString().withMessage('not s
         }
         return true
     }).withMessage('no blog')
+
+export const likeStatusValidator = body('likeStatus').isIn(validStatuses).isString().withMessage('incorrect status')
+export const checklikeValidator = [
+    likeStatusValidator,
+    inputCheckErrorsMiddleware
+]
 
 export const postForBlogValidator = [
     adminMiddleware,

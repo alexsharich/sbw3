@@ -8,8 +8,8 @@ interface MyJwtPayload extends JwtPayload {
 
 export class JwtService {
     createToken(userId: string, deviceId?: string) {
-        const accessToken = jwt.sign({userId}, SETTINGS.JWT_ACCESS, {expiresIn: '10s'})
-        const refreshToken = jwt.sign({userId, deviceId}, SETTINGS.JWT_REFRESH, {expiresIn: '20s'})
+        const accessToken = jwt.sign({userId}, SETTINGS.JWT_ACCESS, {expiresIn: '300s'})
+        const refreshToken = jwt.sign({userId, deviceId}, SETTINGS.JWT_REFRESH, {expiresIn: '600s'})
         return {accessToken, refreshToken}
     }
 
@@ -22,18 +22,19 @@ export class JwtService {
         }
     }
 
-    verifyToken(token: string) {
+    verifyRefreshToken(token: string) {
         try {
-            return jwt.verify(token, SETTINGS.JWT_ACCESS) as { userId: string }
+            return <MyJwtPayload>jwt.verify(token, SETTINGS.JWT_REFRESH)
         } catch (error) {
             return null
         }
     }
 
-    verifyRefreshToken(token: string) {
+    verifyToken(token: string) {
         try {
-            return <MyJwtPayload>jwt.verify(token, SETTINGS.JWT_REFRESH)
+            return <MyJwtPayload>jwt.verify(token, SETTINGS.JWT_ACCESS)
         } catch (error) {
+            console.log('ERRRRRROR', error)
             return null
         }
     }

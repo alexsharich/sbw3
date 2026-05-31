@@ -6,6 +6,7 @@ import {authMiddleware} from "../../global-middleware/auth.middleware";
 import {commentContentValidator} from "../../comments/validators/comment.validators";
 import {PostsController} from "../../posts/controllers/posts.controller";
 import {container} from "../../composition-root";
+import {userIdentificationMiddleware} from "../../posts/validators/user.Identification.middleware";
 
 export type PostDto = {
     title: string,
@@ -25,7 +26,7 @@ export type Post = {
 const postsController = container.get(PostsController)
 export const postsRouter = Router()
 
-postsRouter.get('/:id/comments', postsController.getCommentsForPost.bind(postsController))
+postsRouter.get('/:id/comments', userIdentificationMiddleware, postsController.getCommentsForPost.bind(postsController))
 postsRouter.post('/:id/comments', authMiddleware, ...commentContentValidator, postsController.createCommentForPost.bind(postsController))
 
 postsRouter.get('/', postsController.getPosts.bind(postsController))
