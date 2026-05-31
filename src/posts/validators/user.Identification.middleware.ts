@@ -1,6 +1,6 @@
 import {container} from "../../composition-root";
 import {JwtService} from "../../application/jwtService";
-import {NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 
 const jwtService = container.get(JwtService)
 export const userIdentificationMiddleware = async (req: Request, res: Response, next: NextFunction) => {

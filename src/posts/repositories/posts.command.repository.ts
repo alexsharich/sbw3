@@ -71,14 +71,11 @@ export class PostsCommandRepository {
         return await PostModel.findById(postId).exec()
     }
 
-    async find(id: string): Promise<PostDBType | null> {
-        try {
-            const postId = new ObjectId(id)
-            const post = await PostModel.findOne(postId)
-            if (post) return mapToOutputPost(post)
-            return null
-        } catch (e) {
+    async find(id: string): Promise<OutputPostType | null> {
+        const post = await PostModel.findById(id)
+        if (!post) {
             return null
         }
+        return mapToOutputPost(post)
     }
 }

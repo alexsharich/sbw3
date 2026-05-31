@@ -7,8 +7,9 @@ import {
     LikeStatus,
     OutputCommentType
 } from "../../input-output-types/comments.type";
-import {injectable} from "inversify";
+
 import {LikeModel} from "../../input-output-types/like.comment.type";
+import {injectable} from "inversify";
 
 export const mapToOutputComment = (comment: CommentDocument, myStatus: LikeStatus = 'None'): OutputCommentType => {
     return {
@@ -33,7 +34,7 @@ export class CommentsQueryRepository  {
         try {
             const commentId = new ObjectId(id)
             const comment = await CommentModel.findOne({_id: commentId})
-            const myStatus = await LikeModel.findOne({commentId, userId})
+            const myStatus = await LikeModel.findOne({_id:commentId, userId})
 
             if (comment) return mapToOutputComment(comment, myStatus?.myStatus)
             return null
