@@ -24,14 +24,8 @@ export class UsersCommandRepository {
     }
 
     async deleteUser(id: string) {
-        try {
-            const userId = new ObjectId(id)
-            const result = await UserModel.deleteOne({_id: userId})
-            if (result.deletedCount === 1) return true
-            return false
-        } catch (e) {
-            return false
-        }
+        const result = await UserModel.deleteOne({_id: id}).exec()
+        return result.deletedCount === 1
     }
 
     async deleteAllUsers() {
@@ -85,7 +79,7 @@ export class UsersCommandRepository {
     }
 
     async newPassword(id: ObjectId, newPassword: string) {
-        const user = await UserModel.findById(id).exec()
+        const user = await UserModel.findById(id)
         if (!user) {
             return false
         }
